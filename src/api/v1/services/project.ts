@@ -155,6 +155,58 @@ const TrainImageClassifierProject = async (req: ProjectTrainRequest) => {
   }
 };
 
+const TrainTabularClassifierProject = async (req: ProjectTrainRequest) => {
+  console.log("TrainTabularClassifierProject");
+
+  try {
+    const project = await GetProjectFromId(req.projectId);
+    console.log("project req id:", req.projectId);
+    if (!project) {
+      console.error("Project not found");
+      return null;
+    }
+    console.log("project id:", project.id);
+    const run = new Run();
+    await db.getRepository(Run).save(run);
+    run.name = `Model-v${run.id}`;
+    run.project = project;
+    console.log(run.project);
+    await db.getRepository(Run).save(run);
+
+    // convert email to -> without @ <=> bucket name
+    req.userEmail = req.userEmail.split("@")[0];
+    const response = await axios.post(
+      `${config.mlURL}/api/tabular_classifier/train`,
+      {
+        training_time: req.training_time,
+        userEmail: req.userEmail,
+        projectName: project.name,
+        runName: run.name,
+      }
+    );
+    const result = response.data;
+    if (response.status === httpStatusCodes.OK) {
+      console.log("Accuracy:", result.validation_accuracy);
+      console.log("Time:", result.training_evaluation_time);
+
+      project.validation_accuracy = result.validation_accuracy;
+      project.status = "SUCCESS";
+      run.status = "SUCCESS";
+      run.val_accuracy = result.validation_accuracy;
+
+      await db.getRepository(Run).save(run);
+      await db.getRepository(Project).save(project);
+    } else {
+      run.status = "ERROR";
+      await db.getRepository(Run).save(run);
+    }
+    return result;
+  } catch (error) {
+    console.error("Error communicating with ML service:", error);
+    throw error;
+  }
+};
+
 const predictProject = async (req: ProjectPredictRequest) => {
   try {
     if (req.image === undefined) {
@@ -205,6 +257,7 @@ export const ProjectServices = {
   createProject,
   getAllProject,
   TrainImageClassifierProject,
+  TrainTabularClassifierProject,
   GetProjectFromId,
   predictProject,
 };
