@@ -124,7 +124,7 @@ const TrainImageClassifierProject = async (req: ProjectTrainRequest) => {
     // convert email to -> without @ <=> bucket name
     req.userEmail = req.userEmail.split("@")[0];
     const response = await axios.post(
-      `${config.mlURL}/api/image_classifier/train`,
+      `${config.mlURL}/api/training_service/image_classifier/train`,
       {
         training_time: req.training_time,
         userEmail: req.userEmail,
@@ -176,7 +176,7 @@ const TrainTabularClassifierProject = async (req: ProjectTrainRequest) => {
     // convert email to -> without @ <=> bucket name
     req.userEmail = req.userEmail.split("@")[0];
     const response = await axios.post(
-      `${config.mlURL}/api/tabular_classifier/train`,
+      `${config.mlURL}/api/training_service/tabular_classifier/train`,
       {
         training_time: req.training_time,
         userEmail: req.userEmail,
@@ -225,7 +225,7 @@ const predictProject = async (req: ProjectPredictRequest) => {
     formData.append("image", req.image, req.image.name);
 
     const response = await axios.post(
-      `${config.mlURL}/api/image_classifier/predict`,
+      `${config.mlURL}/api/training_service/image_classifier/predict`,
       formData,
       {
         headers: {
