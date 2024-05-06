@@ -126,6 +126,8 @@ const trainTabularClassificationProject = async (
       training_time,
       userEmail,
       projectId,
+      //TODO
+      //label 
     });
 
     if (response) {

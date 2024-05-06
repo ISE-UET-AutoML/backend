@@ -41,8 +41,8 @@ const convertStringTask = (task: string): Task => {
       return Task.QUESTION_ANSWERING;
     case "Summarization":
       return Task.SUMMARIZATION;
-    case "Tabular Data Regression":
-      return Task.TABULAR_DATA_REGRESSION;
+    case "Tabular Regression":
+      return Task.TABULAR_REGRESSION;
     case "LLM Finetuning":
       return Task.LLM_FINETUNING;
     default:
