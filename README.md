@@ -2,6 +2,7 @@
 
 TODO
 
+add 'label' to tabular training
 change database  : !important
     database design for :
         training service    : !important
