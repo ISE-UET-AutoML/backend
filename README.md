@@ -9,3 +9,4 @@ TODO
         - deploy service      : !important
         - data label service  : far future
 - add tasks routes : 
+- training log passing
