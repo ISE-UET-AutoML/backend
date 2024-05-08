@@ -1,5 +1,5 @@
 import {DataSource} from "typeorm"
-import * as schema from "../models"
+import * as schema from "./models"
 import config from "../../../config"
 
 

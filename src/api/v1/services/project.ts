@@ -1,4 +1,4 @@
-import { Project, Run, Task, User } from "../models";
+import { Project, Run, Task, User } from "../db/models";
 import { db } from "../db";
 import config from "../../../config";
 import axios from "axios";

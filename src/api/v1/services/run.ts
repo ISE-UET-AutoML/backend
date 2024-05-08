@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { Project, Run } from "../models";
+import { Project, Run } from "../db/models";
 
 const getAllRun = async (id: string): Promise<Run[] | null> => {
     try {

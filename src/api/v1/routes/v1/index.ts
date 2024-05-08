@@ -1,7 +1,6 @@
 import {Router} from 'express'
 import authRouter from "./auth";
 import projectRouter from './project';
-import isAuth from '../../middlewares/auth';
 import runRouter from './run';
 
 const routeV1: Router = Router()

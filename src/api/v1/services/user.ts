@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { User } from "../models";
+import { User } from "../db/models";
 
 export type UserRequest = {
   username: string;

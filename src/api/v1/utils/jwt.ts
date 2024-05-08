@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import {User} from '../models'
+import {User} from '../db/models'
 
 export type TokenPayLoad = {
     id: string;
