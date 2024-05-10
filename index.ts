@@ -25,7 +25,7 @@ db.initialize().then(
 
 app.use(cors(
     {
-        origin: config.frontendURL,
+        origin: '*',
         credentials: true
     }
 ))

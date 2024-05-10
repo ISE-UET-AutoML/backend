@@ -9,6 +9,7 @@ const createUser = async (req: Request, res: Response) => {
     try {
         let { username, email, password } = req.body as UserRequest;
         const existUser = await UserServices.findByEmail(email);
+        console.log("createUser:" +email+" - "+password)
         if (existUser) {
             res.status(httpStatusCodes.CONFLICT).json({
                 message: "User already exists",
@@ -40,6 +41,7 @@ const createUser = async (req: Request, res: Response) => {
 const checkLogin = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body as UserRequest;
+        console.log("checkLogin: " + email + " .pass: " +password);
         const user = await UserServices.findByEmail(email);
         if (user === null) {
             res.status(httpStatusCodes.NOT_FOUND).json({
