@@ -3,6 +3,18 @@ import { ProjectController } from "../../../controllers/project";
 
 const ImageClassification = Router();
 
+/**
+ * @openapi
+ * /api/v1/ImageClassification/train:
+ *   post:
+ *    tags:
+ *    - projects
+ *    description:
+ *   requestBody:
+ *    required: true
+ *
+ *
+ */
 ImageClassification.post(
   "/train",
   ProjectController.trainImageClassificationProject

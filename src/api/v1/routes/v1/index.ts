@@ -1,15 +1,15 @@
-import {Router} from 'express'
+import { Router } from "express";
 import authRouter from "./auth";
-import projectRouter from './project';
-import runRouter from './run';
+import projectRouter from "./project";
+import runRouter from "./run";
 
-const routeV1: Router = Router()
+const routeV1: Router = Router();
 
-routeV1.use('/auth', authRouter);
-routeV1.use('/projects', projectRouter);
+routeV1.use("/auth", authRouter);
+routeV1.use("/projects", projectRouter);
 try {
-    routeV1.use('/runs', runRouter);
+  routeV1.use("/runs", runRouter);
 } catch (e: any) {
-    console.log(e);
+  console.log(e);
 }
-export default routeV1
+export default routeV1;
