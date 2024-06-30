@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request as ExRequest, Response as ExRespone } from "express";
 import {
   ProjectTrainRequest,
   ProjectRequest,
@@ -6,8 +6,9 @@ import {
   ProjectPredictRequest,
 } from "../services/project";
 import httpStatusCodes from "../errors/httpStatusCodes";
+import { Post, Route } from "tsoa";
 
-const createProject = async (req: Request, res: Response) => {
+const createProject = async (req: ExRequest, res: ExRespone) => {
   let { email, name, task, description } = req.body as ProjectRequest;
   try {
     const project = await ProjectServices.createProject({
@@ -35,7 +36,7 @@ const createProject = async (req: Request, res: Response) => {
   }
 };
 
-const getAllProject = async (req: Request, res: Response) => {
+const getAllProject = async (req: ExRequest, res: ExRespone) => {
   try {
     const { email } = req.body;
     const projects = await ProjectServices.getAllProject(email);
@@ -61,7 +62,7 @@ const getAllProject = async (req: Request, res: Response) => {
   }
 };
 
-const trainProject = async (req: Request, res: Response) => {
+const trainProject = async (req: ExRequest, res: ExRespone) => {
   let { training_time, userEmail, projectId } = req.body as ProjectTrainRequest;
   console.log({ training_time, userEmail, projectId });
   try {
@@ -88,7 +89,10 @@ const trainProject = async (req: Request, res: Response) => {
     });
   }
 };
-const trainImageClassificationProject = async (req: Request, res: Response) => {
+const trainImageClassificationProject = async (
+  req: ExRequest,
+  res: ExRespone
+) => {
   let { training_time, userEmail, projectId } = req.body as ProjectTrainRequest;
   console.log({ training_time, userEmail, projectId });
   try {
@@ -116,8 +120,8 @@ const trainImageClassificationProject = async (req: Request, res: Response) => {
   }
 };
 const trainTabularClassificationProject = async (
-  req: Request,
-  res: Response
+  req: ExRequest,
+  res: ExRespone
 ) => {
   let { training_time, userEmail, projectId } = req.body as ProjectTrainRequest;
   console.log({ training_time, userEmail, projectId });
@@ -127,7 +131,7 @@ const trainTabularClassificationProject = async (
       userEmail,
       projectId,
       //TODO
-      //label 
+      //label
     });
 
     if (response) {
@@ -147,7 +151,7 @@ const trainTabularClassificationProject = async (
     });
   }
 };
-const predictProject = async (req: Request, res: Response) => {
+const predictProject = async (req: ExRequest, res: ExRespone) => {
   try {
     const predictRequest = req.body as ProjectPredictRequest;
     const response = await ProjectServices.predictProject(predictRequest);
@@ -168,7 +172,7 @@ const predictProject = async (req: Request, res: Response) => {
     });
   }
 };
-const getProjectById = async (req: Request, res: Response) => {
+const getProjectById = async (req: ExRequest, res: ExRespone) => {
   try {
     const Id = req.params.projectId;
     const project = await ProjectServices.GetProjectFromId(Id);
@@ -189,6 +193,7 @@ const getProjectById = async (req: Request, res: Response) => {
     });
   }
 };
+
 export const ProjectController = {
   createProject,
   getAllProject,

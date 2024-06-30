@@ -5,6 +5,7 @@ import swaggerUi from "swagger-ui-express";
 import { version } from "../../../../package.json";
 
 const options = {
+  throwErrorOnUnsupported: true,
   swaggerDefinition: {
     openapi: "3.0.0",
     info: {
@@ -18,13 +19,22 @@ const options = {
     //"./src/api/v1/routes/v1/auth/index.ts",
     //"./src/api/v1/routes/v1/project/index.ts",
     //"./src/api/v1/routes/v1/run/index.ts",
-    "./src/api/v1/routes/v1/**/*.ts",
+    "./src/api/v1/**/*.ts",
   ],
 };
 
 const specs = swaggerJsdoc(options);
 
 function swaggerDoc(app: Express) {
+  // app.use(
+  //   "/docs",
+  //   swaggerUi.serve,
+  //   swaggerUi.setup(undefined, {
+  //     swaggerOptions: {
+  //       url: "/swagger.json",
+  //     },
+  //   })
+  // );
   app.use("/apis", swaggerUi.serve, async (req: Request, res: Response) => {
     //res.send(swaggerUi.setup(specs));
     return res.send(swaggerUi.generateHTML(specs));

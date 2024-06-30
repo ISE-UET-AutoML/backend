@@ -2,20 +2,28 @@ import { Router } from "express";
 import { ProjectController } from "../../../controllers/project";
 import ImageClassification from "./ImageClassification";
 import TabularClassification from "./TabularClassification";
+import { Post } from "tsoa";
 
 const projectRouter = Router();
 
 /**
  * @openapi
- * /projects/createProject:
+ * /api/v1/projects/createProject:
  *   post:
- *    tags:
- *    - projects
- *    description: Create a new project
+ *     tags:
+ *       - authentication
+ *     description:
  *   requestBody:
- *    required: true
- *
- *
+ *     required: true
+ *   parameters:
+ *     - name: email
+ *       in: formData
+ *       required: true
+ *       type: string
+ *     - name: password
+ *       in: formData
+ *       required: true
+ *       type: string
  */
 projectRouter.post("/createProject", ProjectController.createProject);
 
