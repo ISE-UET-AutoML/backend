@@ -81,7 +81,7 @@ import {
 //   checkLogin,
 // };
 
-@Route("api/tsoa_v1/auth")
+@Route("auth")
 export class UserControllerTSOA extends Controller {
   // httpStatusCodes.CREATED: 201
   // using httpStatusCodes make tsoa not generate the correct response code and/or any response at all
