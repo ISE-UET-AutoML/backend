@@ -83,12 +83,8 @@ import {
 // };
 
 @Route("auth")
-<<<<<<< HEAD
 @Tags("Authentication")
 export class TSOA_UserController extends Controller {
-=======
-export class UserControllerTSOA extends Controller {
->>>>>>> 6e1472c8029bf722852b32b8c9c52ce3b8374998
   // httpStatusCodes.CREATED: 201
   // using httpStatusCodes make tsoa not generate the correct response code and/or any response at all
   //@SuccessResponse(httpStatusCodes.CREATED, "User created successfully")
