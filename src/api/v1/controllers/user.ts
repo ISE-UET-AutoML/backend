@@ -12,6 +12,7 @@ import {
   Response,
   Route,
   SuccessResponse,
+  Tags,
 } from "tsoa";
 
 // const createUser = async (req: Request, res: Response) => {
@@ -81,8 +82,9 @@ import {
 //   checkLogin,
 // };
 
-@Route("api/tsoa_v1/auth")
-export class UserControllerTSOA extends Controller {
+@Route("auth")
+@Tags("Authentication")
+export class TSOA_UserController extends Controller {
   // httpStatusCodes.CREATED: 201
   // using httpStatusCodes make tsoa not generate the correct response code and/or any response at all
   //@SuccessResponse(httpStatusCodes.CREATED, "User created successfully")

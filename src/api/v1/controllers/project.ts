@@ -6,7 +6,17 @@ import {
   ProjectPredictRequest,
 } from "../services/project";
 import httpStatusCodes from "../errors/httpStatusCodes";
-import { Post, Route } from "tsoa";
+import {
+  Body,
+  BodyProp,
+  Controller,
+  Post,
+  Route,
+  SuccessResponse,
+  Response,
+  Tags,
+  Res,
+} from "tsoa";
 
 const createProject = async (req: ExRequest, res: ExRespone) => {
   let { email, name, task, description } = req.body as ProjectRequest;
@@ -203,3 +213,81 @@ export const ProjectController = {
   predictProject,
   getProjectById,
 };
+
+@Route("projects")
+@Tags("Project")
+export class TSOA_ProjectController extends Controller {
+  @SuccessResponse(201, "Project created successfully")
+  @Response(
+    400,
+    "Project could not be created, please check the provided data."
+  )
+  @Response(500, "An unexpected error occurred.")
+  @Post("createProject")
+  public async createProject(
+    @BodyProp() email: string = "automl_test@gmail.com",
+    @BodyProp() name: string = "automl_test_project",
+    @BodyProp() task: string = "image_classification",
+    @BodyProp() description: string = ""
+  ): Promise<any> {
+    try {
+      const project = await ProjectServices.createProject({
+        email,
+        name,
+        task,
+        description,
+      });
+      if (project) {
+        this.setStatus(httpStatusCodes.CREATED);
+        return {
+          project_name: project.name,
+          project_id: project.id,
+        };
+      } else {
+        this.setStatus(httpStatusCodes.BAD_REQUEST);
+        return {
+          message:
+            "Project could not be created, please check the provided data.",
+        };
+      }
+    } catch (error: any) {
+      console.error("Project creation failed:", error);
+      this.setStatus(httpStatusCodes.INTERNAL_SERVER_ERROR);
+      return {
+        message: "An unexpected error occurred.",
+      };
+    }
+  }
+
+  @SuccessResponse(200, "Get all project successfully")
+  @Response(400, "Could not be get all project from db.")
+  @Response(500, "An unexpected error occurred.")
+  @Post("getAllProject")
+  public async getAllProject(@BodyProp() email: string): Promise<any> {
+    try {
+      const projects = await ProjectServices.getAllProject(email);
+      if (projects) {
+        const response = projects.map((project) => ({
+          id: project.id,
+          name: project.name,
+          description: project.description,
+          updated_at: project.updated_at,
+          status: project.status,
+        }));
+        this.setStatus(httpStatusCodes.OK);
+        return response;
+      } else {
+        this.setStatus(httpStatusCodes.BAD_REQUEST);
+        return {
+          message: "Could not be get all project from db.",
+        };
+      }
+    } catch (error: any) {
+      console.error("Get all project failed:", error);
+      this.setStatus(httpStatusCodes.INTERNAL_SERVER_ERROR);
+      return {
+        message: "An unexpected error occurred.",
+      };
+    }
+  }
+}

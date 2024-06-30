@@ -14,7 +14,7 @@ import { swaggerDoc } from "./api/v1/utils/swagger";
 import swaggerUi from "swagger-ui-express";
 const app = express();
 
-const apiPrefix = "/api/v1";
+const apiPrefix = "/api/tsoa_v1";
 
 db.initialize()
   .then(() => {

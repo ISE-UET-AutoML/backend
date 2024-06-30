@@ -4,9 +4,11 @@
   "controllerPathGlobs": ["src/**/controllers/*.ts"],
   "spec": {
     "outputDirectory": "dist",
-    "specVersion": 3
+    "specVersion": 3,
+    "basePath": "/api/tsoa_v1"
   },
   "routes": {
-    "routesDir": "dist"
+    "routesDir": "dist",
+    "basePath": "/api/tsoa_v1"
   }
 }
