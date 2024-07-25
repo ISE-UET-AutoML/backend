@@ -13,6 +13,84 @@ import { getLabelAndFilePath, randomString, randomUID } from '../utils/string.ut
 import Image from '../models/image.model.js'
 import DatasetService from './dataset.service.js'
 import ProjectService from './project.service.js'
+import { log } from 'console'
+import fs from 'fs'
+
+
+const saveFileToLocal = async (validFiles, projectID, uploadType) => {
+  var results = [];
+  validFiles.forEach((file, index, readonly) => {
+    var paths = file.name.split('/')
+    var name = paths[paths.length - 1]
+    var label = paths[paths.length - 2]
+    var file_path = `public/media/upload/${projectID}/${name}`
+
+    file.url = `http://${config.hostIP}:${config.port}/${file_path.replace('public/', '')}`
+    file.key = name
+    file.label = label
+    results.push(file)
+    fs.writeFile(file_path, file.data, (err) => { })
+  })
+  // log(results[0])
+
+  return results;
+}
+
+const UploadLocalFiles = async (projectID, files, uploadType) => {
+  try {
+    const { labels, validFiles } = parseAndValidateFiles(files, uploadType)
+    // console.log('valid file', validFiles[0]);
+
+    const folderPath = `public/media/upload/${projectID}`
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath);
+    }
+
+    const uploadedFiles = await saveFileToLocal(validFiles, projectID, uploadType)
+    // Upload folder
+    if (labels.length > 0) {
+      const insertingLabels = labels.map((label) => ({
+        project_id: projectID,
+        name: label,
+      }))
+      await LabelService.UpsertAll(projectID, insertingLabels)
+    }
+    const labelMap = await LabelService.GetLabelMap(projectID)
+    const datasetInfo = {
+      key: `label/${projectID}`,
+      pattern: `public/label/${projectID}`,
+      project_id: projectID,
+    }
+    const dataset = await DatasetService.Upsert(datasetInfo)
+
+    const uploadedFilesInfo = await insertUploadedFiles(
+      uploadedFiles,
+      projectID,
+      dataset._id,
+      labelMap
+    )
+
+    const defaultPageSize = 24
+    const totalPage = Math.ceil(uploadedFilesInfo.length / defaultPageSize)
+    const fileInfo = uploadedFilesInfo.slice(0, defaultPageSize)
+    // Convert label map to array of labels: { id, value }
+    const labelsWithID = Object.entries(labelMap).map(([label, id]) => {
+      return { id: id.toString(), value: label }
+    })
+
+    // Update project thumbnail
+    const thumbnailURL = uploadedFilesInfo[0].url
+    await ProjectService.Update(projectID, { thumbnail_url: thumbnailURL, uploaded: true })
+    return {
+      files: fileInfo,
+      labels: labelsWithID,
+      pagination: { page: 1, size: 24, total_page: totalPage },
+    }
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
 
 const UploadFiles = async (projectID, files, uploadType) => {
   try {
@@ -89,7 +167,8 @@ const DeleteFiles = async (keys) => {
 }
 
 const insertUploadedFiles = async (uploadedFiles, projectID, datasetID, labelMap) => {
-  const imageURLPrefix = `${GCS_HOST}/${config.storageBucketName}`
+  // const imageURLPrefix = `${GCS_HOST}/${config.storageBucketName}`
+  const imageURLPrefix = `media/upload/${projectID}`
   const insertingFiles = []
   const uploadedFilesInfo = []
   try {
@@ -101,18 +180,18 @@ const insertUploadedFiles = async (uploadedFiles, projectID, datasetID, labelMap
         project_id: projectID,
         uid,
       }
-      insertingFiles.push({
-        ...baseInfo,
-        key: `images/${file.key}`,
-        url: `${imageURLPrefix}/images/${file.key}`,
-        is_original: true,
-      })
+      // insertingFiles.push({
+      //   ...baseInfo,
+      //   key: `${file.key}`,
+      //   url: `${imageURLPrefix}/${file.key}`,
+      //   is_original: true,
+      // })
 
       const labelingImage = {
         ...baseInfo,
         _id: labelingImageID,
-        key: `label/${file.key}`,
-        url: `${imageURLPrefix}/label/${file.key}`,
+        key: `${file.key}`,
+        url: file.url,
         is_original: false,
         dataset_id: datasetID,
       }
@@ -269,5 +348,5 @@ const generateUniqueFileName = (originalFileName) => {
 //   return `${dir}/${uniqueFileName}${ext}`
 // }
 
-const StorageService = { UploadFiles, DeleteFiles, MoveFile }
+const StorageService = { UploadFiles, DeleteFiles, MoveFile, UploadLocalFiles }
 export default StorageService

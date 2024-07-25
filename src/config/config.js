@@ -30,6 +30,7 @@ const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET
 const webServiceAddr = process.env.WEB_SERVICE_ADDR
 const mlServiceAddr = process.env.ML_SERVICE_ADDR
+const hostIP = process.env.HOST_IP
 
 const config = {
   port,
@@ -41,6 +42,7 @@ const config = {
   refreshTokenSecret,
   webServiceAddr,
   mlServiceAddr,
+  hostIP,
 }
 
 export default config
