@@ -149,6 +149,7 @@ const GetDatasets = async (req, res) => {
             'labels': images.data.labels,
             'pagination': images.meta,
         }
+        // console.log(results);
         return res.json(results)
     } catch (error) {
         console.log(error)
