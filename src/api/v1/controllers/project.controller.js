@@ -84,31 +84,31 @@ const TrainModel = async (req, res) => {
         //TODO: fix hardcode
         const payload = {
             "userEmail": "test-automl",
-            "projectName": "titanic",
+            "projectName": "4-animal",
             "training_time": 60,
             "runName": "ISE",
             "presets": "medium_quality",
-            "dataset_url": "1yIkh7Wvu4Lk1o6gVIuyXTb3l9zwNXOCE",
-            "gcloud_dataset_bucketname": config.storageBucketName,
-            "gcloud_dataset_directory": `label/${projectID}/`,
-            "dataset_download_method": "gcloud",
-            "label_column": "label",
+            "dataset_url": "1QEhox5PADwRiL8h_cWtpp2vb229rKRXE",
+            "gcloud_dataset_bucketname": "string",
+            "gcloud_dataset_directory": "string",
+            "dataset_download_method": "gdrive",
             "training_argument": {
-                "data_args": {},
+                "data_args": { },
                 "ag_model_args": {
+                    "pretrained": true,
                     "hyperparameters": {
                         "model.timm_image.checkpoint_name": "swin_small_patch4_window7_224"
-                    },
-                    "pretrained": true
+                    }
                 },
                 "ag_fit_args": {
+                    "time_limit": 60,
                     "hyperparameters": {
-                        "env.batch_size": 4,
-                        "env.per_gpu_batch_size": 4
-                    },
-                    "time_limit": 60
+                        "env.per_gpu_batch_size": 4,
+                        "env.batch_size": 4
+                    }
                 }
-            }
+            },
+            "label_column": "label"
         }
 
         const { data } = await axios.post(`${config.mlServiceAddr}/model_service/train/image_classification`, payload)
