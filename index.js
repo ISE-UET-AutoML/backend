@@ -14,7 +14,7 @@ const __dirname = path.resolve();
 console.log(__dirname)
 const app = express()
 app.use(express.static('public'))
-console.log("static",path.join(__dirname, 'public'));
+console.log("static", path.join(__dirname, 'public'));
 
 // middlewares
 const allowedOrigins = [config.webServiceAddr, config.mlServiceAddr]
@@ -54,10 +54,10 @@ app.use((err, req, res, next) => {
   })
 })
 
-
+console.log(config.databaseURL)
 mongoose.set('strictQuery', true)
 mongoose
-  .connect(config.databaseURL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(config.databaseURL)
   .then(() => {
     console.log('Connected to DB')
     app.listen(config.port, () => {
