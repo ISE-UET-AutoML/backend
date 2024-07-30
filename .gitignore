@@ -40,3 +40,5 @@ yarn-error.log*
 
 # GCP
 ./config/service-account*.json
+public
+src/config/service-account.json

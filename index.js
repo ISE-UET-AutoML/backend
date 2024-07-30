@@ -9,8 +9,12 @@ import createError from 'http-errors'
 import routes from '#api/routes/index.js'
 import config from '#src/config/config.js'
 import morgan from 'morgan'
-
+import path from 'path';
+const __dirname = path.resolve();
+console.log(__dirname)
 const app = express()
+app.use(express.static('public'))
+console.log("static",path.join(__dirname, 'public'));
 
 // middlewares
 const allowedOrigins = [config.webServiceAddr, config.mlServiceAddr]
@@ -49,6 +53,7 @@ app.use((err, req, res, next) => {
     message: err.message,
   })
 })
+
 
 mongoose.set('strictQuery', true)
 mongoose

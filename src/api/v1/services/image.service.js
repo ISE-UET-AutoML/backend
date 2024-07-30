@@ -144,6 +144,15 @@ const ReplaceLabel = (key, isLabelExist, newLabel) => {
   return paths.filter(Boolean).join('/')
 }
 
+const UpdateLabel = (imageId, newLabelId) => {
+  const image = Image.findById(imageId)
+  image.label_id = newLabelId
+  image.save()
+  return image
+}
+
+
+
 const ImageService = {
   List,
   UpdateAll,
@@ -152,5 +161,6 @@ const ImageService = {
   DeleteByProject,
   LabelImage,
   ReplaceLabel,
+  UpdateLabel
 }
 export default ImageService
