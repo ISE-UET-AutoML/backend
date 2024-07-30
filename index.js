@@ -14,7 +14,7 @@ const __dirname = path.resolve();
 console.log(__dirname)
 const app = express()
 app.use(express.static('public'))
-console.log("static",path.join(__dirname, 'public'));
+console.log("static", path.join(__dirname, 'public'));
 
 // middlewares
 const allowedOrigins = [config.webServiceAddr, config.mlServiceAddr]
@@ -24,6 +24,7 @@ app.use(
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true)
       } else {
+        console.log("falid");
         callback(new Error('Not allowed by CORS'))
       }
     },

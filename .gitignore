@@ -42,3 +42,4 @@ yarn-error.log*
 ./config/service-account*.json
 public
 src/config/service-account.json
+src/config/service-account.json
