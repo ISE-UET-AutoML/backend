@@ -1,5 +1,9 @@
 import ProjectService from '../services/project.service.js'
 import DatasetService from '../services/dataset.service.js'
+import ImageService from '../services/image.service.js'
+import LabelService from '../services/label.service.js'
+
+
 import axios from 'axios'
 import config from '#src/config/config.js'
 
@@ -61,6 +65,8 @@ const UploadFiles = async (req, res) => {
     const { type } = req.body
     try {
         const uploadedFiles = await ProjectService.UploadFiles(_id, id, req.files.files, type)
+        // TODO
+        // need to save dataset to database (id)
         return res.json(uploadedFiles)
     } catch (error) {
         console.error(error)
@@ -78,31 +84,31 @@ const TrainModel = async (req, res) => {
         //TODO: fix hardcode
         const payload = {
             "userEmail": "test-automl",
-            "projectName": "titanic",
+            "projectName": "4-animal",
             "training_time": 60,
             "runName": "ISE",
             "presets": "medium_quality",
-            "dataset_url": "1yIkh7Wvu4Lk1o6gVIuyXTb3l9zwNXOCE",
-            "gcloud_dataset_bucketname": config.storageBucketName,
-            "gcloud_dataset_directory": `label/${projectID}/`,
-            "dataset_download_method": "gcloud",
-            "label_column": "label",
+            "dataset_url": "1QEhox5PADwRiL8h_cWtpp2vb229rKRXE",
+            "gcloud_dataset_bucketname": "string",
+            "gcloud_dataset_directory": "string",
+            "dataset_download_method": "gdrive",
             "training_argument": {
-                "data_args": {},
+                "data_args": { },
                 "ag_model_args": {
+                    "pretrained": true,
                     "hyperparameters": {
                         "model.timm_image.checkpoint_name": "swin_small_patch4_window7_224"
-                    },
-                    "pretrained": true
+                    }
                 },
                 "ag_fit_args": {
+                    "time_limit": 60,
                     "hyperparameters": {
-                        "env.batch_size": 4,
-                        "env.per_gpu_batch_size": 4
-                    },
-                    "time_limit": 60
+                        "env.per_gpu_batch_size": 4,
+                        "env.batch_size": 4
+                    }
                 }
-            }
+            },
+            "label_column": "label"
         }
 
         const { data } = await axios.post(`${config.mlServiceAddr}/model_service/train/image_classification`, payload)
@@ -124,6 +130,33 @@ const ListModel = async (req, res) => {
     }
 }
 
+const GetDatasets = async (req, res) => {
+    const { id } = req.params
+    try {
+        const defaultPageSize = 24
+        const images = await ImageService.List(id, 1, defaultPageSize)
+        const files = images.data.files.map((value, index) => {
+            return {
+                _id: value._id,
+                label: value.label,
+                label_id: value.label_id,
+                uid: value.uid,
+                url: value.url
+            }
+        })
+        const results = {
+            'files': files,
+            'labels': images.data.labels,
+            'pagination': images.meta,
+        }
+        // console.log(results);
+        return res.json(results)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ error: error.message })
+    }
+}
+
 const ProjectController = {
     List,
     Get,
@@ -132,7 +165,8 @@ const ProjectController = {
     Delete,
     UploadFiles,
     TrainModel,
-    ListModel
+    ListModel,
+    GetDatasets
 }
 
 export default ProjectController
