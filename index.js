@@ -16,6 +16,7 @@ const app = express()
 app.use(express.static('public'))
 console.log("static", path.join(__dirname, 'public'));
 
+
 // middlewares
 const allowedOrigins = [config.webServiceAddr, config.mlServiceAddr]
 // app.use(
@@ -30,6 +31,7 @@ const allowedOrigins = [config.webServiceAddr, config.mlServiceAddr]
 //   })
 // )
 app.options('*', cors())
+
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Credentials', true)
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, X-Auth-Token, Content-Type, Accept')

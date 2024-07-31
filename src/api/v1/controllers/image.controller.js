@@ -46,5 +46,5 @@ const UpdateImage = async (req, res) => {
   }
 }
 
-const ImageController = { List, Delete, LabelImage,UpdateImage }
+const ImageController = { List, Delete, LabelImage, UpdateImage }
 export default ImageController
