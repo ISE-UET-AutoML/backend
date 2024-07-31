@@ -79,40 +79,9 @@ const TrainModel = async (req, res) => {
     const { id: projectID } = req.params
 
     try {
-        console.log({ bucket_name: config.storageBucketName })
+        const TrainingJob = await ProjectService.TrainModel(projectID)
 
-        //TODO: fix hardcode
-        const payload = {
-            "userEmail": "test-automl",
-            "projectName": "4-animal",
-            "training_time": 60,
-            "runName": "ISE",
-            "presets": "medium_quality",
-            "dataset_url": "1QEhox5PADwRiL8h_cWtpp2vb229rKRXE",
-            "gcloud_dataset_bucketname": "string",
-            "gcloud_dataset_directory": "string",
-            "dataset_download_method": "gdrive",
-            "training_argument": {
-                "data_args": { },
-                "ag_model_args": {
-                    "pretrained": true,
-                    "hyperparameters": {
-                        "model.timm_image.checkpoint_name": "swin_small_patch4_window7_224"
-                    }
-                },
-                "ag_fit_args": {
-                    "time_limit": 60,
-                    "hyperparameters": {
-                        "env.per_gpu_batch_size": 4,
-                        "env.batch_size": 4
-                    }
-                }
-            },
-            "label_column": "label"
-        }
-
-        const { data } = await axios.post(`${config.mlServiceAddr}/model_service/train/image_classification`, payload)
-        res.json(data)
+        res.json(TrainingJob)
     } catch (error) {
         console.error(error)
         res.sendStatus(500)
@@ -157,7 +126,7 @@ const GetDatasets = async (req, res) => {
     }
 }
 
-const ExplainInstance = async(req, res) => {
+const ExplainInstance = async (req, res) => {
     // // const image = req.body.image
     // const {userEmail, projectName, runName } = JSON.parse(req.body.json);
 
