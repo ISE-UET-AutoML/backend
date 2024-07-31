@@ -76,7 +76,6 @@ const DeployModel = async (experimentName) => {
     // }
     // const { data } = await axios.post(`${config.mlServiceAddr}/clf/deploy`, payload)
     // return data
-    Mo
   } catch (error) {
     console.error(error)
     throw error
@@ -85,15 +84,23 @@ const DeployModel = async (experimentName) => {
 
 const GetTrainingGraph = async (experimentName) => {
   try {
-    const experiment = await Experiment.findOne({ name: experimentName })
-    if (!experiment) {
-      throw new Error('Experiment does not exist')
-    }
+    // const experiment = await Experiment.findOne({ name: experimentName })
+    // if (!experiment) {
+    //   throw new Error('Experiment does not exist')
+    // }
 
-    const bestRun = await RunService.GetBestExperimentRun(experiment._id)
+    // TODO: get training graph from ml service
+    const userEmail = 'test-automl'
+    const projectName = '4-animal'
+    const runName = 'ISE' // fixed
+    const task_id = 'lastest' // 'lastest' to return lastest experiment or use experiment id to return specific experiment
+    const request = (`${config.mlServiceAddr}/model_service/train/fit_history/?userEmail=${userEmail}&projectName=${projectName}&runName=${runName}&task_id=${task_id}`)
+    const req = 'http://localhost:8670/model_service/train/fit_history/?userEmail=test-automl&projectName=4-animal&runName=ISE&task_id=lastest'
+    const res = await axios.get(req, { accept: 'application/json' })
+    // const bestRun = await RunService.GetBestExperimentRun(experiment._id)
 
-    const { data } = await axios.get(`${config.mlServiceAddr}/train/history?run_id=${bestRun.run_id}`)
-    return data
+    console.log(res.data)
+    return res.data
   } catch (error) {
     console.error(error)
     throw error
