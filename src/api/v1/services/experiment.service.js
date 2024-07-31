@@ -96,7 +96,7 @@ const GetTrainingGraph = async (experimentName) => {
     const task_id = 'lastest' // 'lastest' to return lastest experiment or use experiment id to return specific experiment
     const request = (`${config.mlServiceAddr}/model_service/train/fit_history/?userEmail=${userEmail}&projectName=${projectName}&runName=${runName}&task_id=${task_id}`)
     const req = 'http://localhost:8670/model_service/train/fit_history/?userEmail=test-automl&projectName=4-animal&runName=ISE&task_id=lastest'
-    const res = await axios.get(req, { accept: 'application/json' })
+    const res = await axios.get(request, { accept: 'application/json' })
     // const bestRun = await RunService.GetBestExperimentRun(experiment._id)
 
     console.log(res.data)
