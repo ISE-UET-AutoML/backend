@@ -65,8 +65,6 @@ const UploadFiles = async (req, res) => {
     const { type } = req.body
     try {
         const uploadedFiles = await ProjectService.UploadFiles(_id, id, req.files.files, type)
-        // TODO
-        // need to save dataset to database (id)
         return res.json(uploadedFiles)
     } catch (error) {
         console.error(error)
