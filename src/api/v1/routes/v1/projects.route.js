@@ -12,5 +12,7 @@ projectRouter.delete('/:id', ProjectController.Delete)
 projectRouter.post('/:id/upload', ProjectController.UploadFiles)
 projectRouter.post('/:id/train', ProjectController.TrainModel)
 projectRouter.get('/:id/datasets', ProjectController.GetDatasets)
+projectRouter.post('/:id/explain', ProjectController.ExplainInstance)
+
 
 export default projectRouter

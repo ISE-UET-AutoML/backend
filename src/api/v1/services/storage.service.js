@@ -43,7 +43,7 @@ const UploadLocalFiles = async (projectID, files, uploadType) => {
 
     const folderPath = `public/media/upload/${projectID}`
     if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath);
+      fs.mkdirSync(folderPath, { recursive: true });
     }
 
     const uploadedFiles = await saveFileToLocal(validFiles, projectID, uploadType)

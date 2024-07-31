@@ -65,6 +65,8 @@ const UploadFiles = async (req, res) => {
     const { type } = req.body
     try {
         const uploadedFiles = await ProjectService.UploadFiles(_id, id, req.files.files, type)
+        // TODO
+        // need to save dataset to database (id)
         return res.json(uploadedFiles)
     } catch (error) {
         console.error(error)
@@ -155,6 +157,36 @@ const GetDatasets = async (req, res) => {
     }
 }
 
+const ExplainInstance = async(req, res) => {
+    // // const image = req.body.image
+    // const {userEmail, projectName, runName } = JSON.parse(req.body.json);
+
+    // console.log(userEmail, projectName, runName);
+
+    // const options = {
+    //     headers: {
+    //         'Content-Type': 'multipart/form-data'
+    //     }
+    // }
+    // try {
+    //     const { data } = await axios.post(`${config.mlServiceAddr}/model_service/train/image_classification/explain`, {
+    //         userEmail: userEmail,
+    //         projectName: projectName,
+    //         runName: runName,
+    //         image: req.files.image
+    //     }, options);
+
+
+    //     const base64_image_str = data.explain_image;
+    //     const explain_image_str = `data:image/jpeg;base64,${base64_image_str}`;
+
+    //     return res.json({status: 'success', explain_image: explain_image_str})
+    // } catch (err) {
+    //     console.log(err);
+    // }
+}
+
+
 const ProjectController = {
     List,
     Get,
@@ -164,7 +196,8 @@ const ProjectController = {
     UploadFiles,
     TrainModel,
     ListModel,
-    GetDatasets
+    GetDatasets,
+    ExplainInstance
 }
 
 export default ProjectController

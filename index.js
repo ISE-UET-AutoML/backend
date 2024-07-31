@@ -16,6 +16,7 @@ const app = express()
 app.use(express.static('public'))
 console.log("static", path.join(__dirname, 'public'));
 
+
 // middlewares
 const allowedOrigins = [config.webServiceAddr, config.mlServiceAddr]
 app.use(
