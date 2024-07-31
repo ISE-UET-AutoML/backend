@@ -4,7 +4,7 @@ import { Storage } from '@google-cloud/storage'
 import { IdempotencyStrategy } from '@google-cloud/storage/build/src/storage.js'
 import { fileURLToPath } from 'url'
 
-dotenv.config()
+dotenv.config({ override: true, debug: true })
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)

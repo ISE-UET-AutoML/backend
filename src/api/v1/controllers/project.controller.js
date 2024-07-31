@@ -65,6 +65,8 @@ const UploadFiles = async (req, res) => {
     const { type } = req.body
     try {
         const uploadedFiles = await ProjectService.UploadFiles(_id, id, req.files.files, type)
+        // TODO
+        // need to save dataset to database (id)
         return res.json(uploadedFiles)
     } catch (error) {
         console.error(error)
@@ -77,40 +79,9 @@ const TrainModel = async (req, res) => {
     const { id: projectID } = req.params
 
     try {
-        console.log({ bucket_name: config.storageBucketName })
+        const TrainingJob = await ProjectService.TrainModel(projectID)
 
-        //TODO: fix hardcode
-        const payload = {
-            "userEmail": "test-automl",
-            "projectName": "titanic",
-            "training_time": 60,
-            "runName": "ISE",
-            "presets": "medium_quality",
-            "dataset_url": "1yIkh7Wvu4Lk1o6gVIuyXTb3l9zwNXOCE",
-            "gcloud_dataset_bucketname": config.storageBucketName,
-            "gcloud_dataset_directory": `label/${projectID}/`,
-            "dataset_download_method": "gcloud",
-            "label_column": "label",
-            "training_argument": {
-                "data_args": {},
-                "ag_model_args": {
-                    "hyperparameters": {
-                        "model.timm_image.checkpoint_name": "swin_small_patch4_window7_224"
-                    },
-                    "pretrained": true
-                },
-                "ag_fit_args": {
-                    "hyperparameters": {
-                        "env.batch_size": 4,
-                        "env.per_gpu_batch_size": 4
-                    },
-                    "time_limit": 60
-                }
-            }
-        }
-
-        const { data } = await axios.post(`${config.mlServiceAddr}/model_service/train/image_classification`, payload)
-        res.json(data)
+        res.json(TrainingJob)
     } catch (error) {
         console.error(error)
         res.sendStatus(500)
@@ -155,6 +126,36 @@ const GetDatasets = async (req, res) => {
     }
 }
 
+const ExplainInstance = async (req, res) => {
+    // // const image = req.body.image
+    // const {userEmail, projectName, runName } = JSON.parse(req.body.json);
+
+    // console.log(userEmail, projectName, runName);
+
+    // const options = {
+    //     headers: {
+    //         'Content-Type': 'multipart/form-data'
+    //     }
+    // }
+    // try {
+    //     const { data } = await axios.post(`${config.mlServiceAddr}/model_service/train/image_classification/explain`, {
+    //         userEmail: userEmail,
+    //         projectName: projectName,
+    //         runName: runName,
+    //         image: req.files.image
+    //     }, options);
+
+
+    //     const base64_image_str = data.explain_image;
+    //     const explain_image_str = `data:image/jpeg;base64,${base64_image_str}`;
+
+    //     return res.json({status: 'success', explain_image: explain_image_str})
+    // } catch (err) {
+    //     console.log(err);
+    // }
+}
+
+
 const ProjectController = {
     List,
     Get,
@@ -164,7 +165,8 @@ const ProjectController = {
     UploadFiles,
     TrainModel,
     ListModel,
-    GetDatasets
+    GetDatasets,
+    ExplainInstance
 }
 
 export default ProjectController
