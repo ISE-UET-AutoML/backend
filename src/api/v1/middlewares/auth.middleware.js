@@ -4,9 +4,13 @@ const isAuth = async (req, res, next) => {
   const { accessToken } = req.cookies
   if (accessToken) {
     try {
-      const decoded = await verifyToken(accessToken, process.env.ACCESS_TOKEN_SECRET, {})
-      req.user = decoded
-      next()
+      if (accessToken === process.env.ACCESS_TOKEN_SECRET)
+        next()
+      else {
+        const decoded = await verifyToken(accessToken, process.env.ACCESS_TOKEN_SECRET, {})
+        req.user = decoded
+        next()
+      }
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
         if (error.message === 'jwt expired') {

@@ -101,9 +101,10 @@ const ListModel = async (req, res) => {
 
 const GetDatasets = async (req, res) => {
     const { id } = req.params
+    const page = req.query.page || 1
     try {
         const defaultPageSize = 24
-        const images = await ImageService.List(id, 1, defaultPageSize)
+        const images = await ImageService.List(id, page, defaultPageSize)
         const files = images.data.files.map((value, index) => {
             return {
                 _id: value._id,
