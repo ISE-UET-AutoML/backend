@@ -63,18 +63,20 @@ const DeployModel = async (experimentName) => {
     if (!experiment) {
       throw new Error('Experiment does not exist')
     }
+    //MLModel.Create()
 
-    const bestRun = await RunService.GetBestExperimentRun(experiment._id)
-    const labelMap = await LabelService.GetLabelMap(experiment.project_id)
-    const labels = Object.keys(labelMap)
-    const payload = {
-      classes: labels,
-      target_size: 224,
-      model_dir: bestRun.best_model_url,
-      experiment_name: experiment.name,
-    }
-    const { data } = await axios.post(`${config.mlServiceAddr}/clf/deploy`, payload)
-    return data
+    // const bestRun = await RunService.GetBestExperimentRun(experiment._id)
+    // const labelMap = await LabelService.GetLabelMap(experiment.project_id)
+    // const labels = Object.keys(labelMap)
+    // const payload = {
+    //   classes: labels,
+    //   target_size: 224,
+    //   model_dir: bestRun.best_model_url,
+    //   experiment_name: experiment.name,
+    // }
+    // const { data } = await axios.post(`${config.mlServiceAddr}/clf/deploy`, payload)
+    // return data
+    Mo
   } catch (error) {
     console.error(error)
     throw error
@@ -89,7 +91,7 @@ const GetTrainingGraph = async (experimentName) => {
     }
 
     const bestRun = await RunService.GetBestExperimentRun(experiment._id)
-    
+
     const { data } = await axios.get(`${config.mlServiceAddr}/train/history?run_id=${bestRun.run_id}`)
     return data
   } catch (error) {
@@ -106,10 +108,10 @@ const SaveBestModel = async (userID, experimentName) => {
     }
 
     const bestRun = await RunService.GetBestExperimentRun(experiment._id)
-    
-    const model = new MLModel({ 
-      name: 'Untitled Model 1', 
-      url: bestRun.best_model_url, 
+
+    const model = new MLModel({
+      name: 'Untitled Model 1',
+      url: bestRun.best_model_url,
       project_id: experiment.project_id,
       author_id: userID,
     })
