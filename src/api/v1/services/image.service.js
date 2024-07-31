@@ -34,7 +34,7 @@ const List = async (projectID, page, size) => {
 
       return { ...image.toJSON(), label }
     })
-    
+
     return {
       data: { files, labels },
       meta: {
@@ -131,6 +131,29 @@ const LabelImage = async (imageID, labelID) => {
   }
 }
 
+
+const UpdateLabelImage = async (imageID, labelID) => {
+  try {
+    console.log(imageID, labelID);
+    const [image, label] = await Promise.all([
+      Image.findOne({ _id: imageID }),
+      Label.findOne({ _id: labelID }),
+    ])
+    if (image == undefined) {
+      throw new Error('Image does not exist')
+    }
+
+    if (label == undefined) {
+      throw new Error('Label does not exist')
+    }
+    console.log(image);
+    return await image.updateOne({ label_id: labelID })
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
 // Pass undefined or '' for empty label
 const ReplaceLabel = (key, isLabelExist, newLabel) => {
   const paths = key.split('/')
@@ -144,6 +167,15 @@ const ReplaceLabel = (key, isLabelExist, newLabel) => {
   return paths.filter(Boolean).join('/')
 }
 
+const UpdateLabel = (imageId, newLabelId) => {
+  const image = Image.findById(imageId)
+  image.label_id = newLabelId
+  image.save()
+  return image
+}
+
+
+
 const ImageService = {
   List,
   UpdateAll,
@@ -152,5 +184,7 @@ const ImageService = {
   DeleteByProject,
   LabelImage,
   ReplaceLabel,
+  UpdateLabel,
+  UpdateLabelImage
 }
 export default ImageService

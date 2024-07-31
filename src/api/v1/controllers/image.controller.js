@@ -32,5 +32,20 @@ const LabelImage = async (req, res) => {
   }
 }
 
-const ImageController = { List, Delete, LabelImage }
+const UpdateImage = async (req, res) => {
+  console.log(req);
+  // 'imageId':imageId,
+  //       'oldLabelId':oldLabelId,
+  //        'newLabelId':newLabelId
+  const { imageId, oldLabelId, newLabelId } = req.query
+  try {
+    const images = await ImageService.UpdateLabelImage(imageId, newLabelId)
+    console.log(res);
+    return res.json(images)
+  } catch (error) {
+    return res.status(500).json({ error: error.message })
+  }
+}
+
+const ImageController = { List, Delete, LabelImage, UpdateImage }
 export default ImageController

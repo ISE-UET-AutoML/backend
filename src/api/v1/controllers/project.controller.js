@@ -1,5 +1,9 @@
 import ProjectService from '../services/project.service.js'
 import DatasetService from '../services/dataset.service.js'
+import ImageService from '../services/image.service.js'
+import LabelService from '../services/label.service.js'
+
+
 import axios from 'axios'
 import config from '#src/config/config.js'
 
@@ -124,6 +128,33 @@ const ListModel = async (req, res) => {
     }
 }
 
+const GetDatasets = async (req, res) => {
+    const { id } = req.params
+    try {
+        const defaultPageSize = 24
+        const images = await ImageService.List(id, 1, defaultPageSize)
+        const files = images.data.files.map((value, index) => {
+            return {
+                _id: value._id,
+                label: value.label,
+                label_id: value.label_id,
+                uid: value.uid,
+                url: value.url
+            }
+        })
+        const results = {
+            'files': files,
+            'labels': images.data.labels,
+            'pagination': images.meta,
+        }
+        // console.log(results);
+        return res.json(results)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ error: error.message })
+    }
+}
+
 const ProjectController = {
     List,
     Get,
@@ -132,7 +163,8 @@ const ProjectController = {
     Delete,
     UploadFiles,
     TrainModel,
-    ListModel
+    ListModel,
+    GetDatasets
 }
 
 export default ProjectController
