@@ -303,7 +303,7 @@ const UploadFiles = async (userID, projectID, files, uploadType) => {
     }
 
     const uploadedFiles = await StorageService.UploadLocalFiles(project._id, files, uploadType)
-    
+
     return uploadedFiles
   } catch (error) {
     console.error(error)
@@ -313,24 +313,55 @@ const UploadFiles = async (userID, projectID, files, uploadType) => {
 
 const TrainModel = async (projectID) => {
   try {
-    const dataset = await DatasetService.ListByProject(projectID)
-    const labelMap = await LabelService.GetLabelMap(projectID)
-    const classes = Object.keys(labelMap)
-    const experiment = await ExperimentService.LatestByProject(projectID)
-    const experimentName = experiment.name
+    // const dataset = await DatasetService.ListByProject(projectID)
+    // const labelMap = await LabelService.GetLabelMap(projectID)
+    // const classes = Object.keys(labelMap)
+    // const experiment = await ExperimentService.LatestByProject(projectID)
+    // const experimentName = experiment.name
 
+    // const payload = {
+    //   project_id: projectID,
+    //   experiment_name: experimentName,
+    //   gcs_folder: dataset.pattern,
+    //   gcs_output: `gs://${config.storageBucketName}/datasets/${experimentName}/`,
+    //   dataset_url: `gs://${config.storageBucketName}/datasets/${experimentName}/*.tfrec`,
+    //   target_size: 224,
+    //   classes,
+    //   num_classes: classes.length,
+    // }
+    //TODO: fix hardcode
     const payload = {
-      project_id: projectID,
-      experiment_name: experimentName,
-      gcs_folder: dataset.pattern,
-      gcs_output: `gs://${config.storageBucketName}/datasets/${experimentName}/`,
-      dataset_url: `gs://${config.storageBucketName}/datasets/${experimentName}/*.tfrec`,
-      target_size: 224,
-      classes,
-      num_classes: classes.length,
+      "userEmail": "test-automl",
+      "projectName": "4-animal",
+      "training_time": 60,
+      "runName": "ISE",
+      "presets": "medium_quality",
+      "dataset_url": "1QEhox5PADwRiL8h_cWtpp2vb229rKRXE",
+      "gcloud_dataset_bucketname": "string",
+      "gcloud_dataset_directory": "string",
+      "dataset_download_method": "gdrive",
+      "training_argument": {
+        "data_args": {},
+        "ag_model_args": {
+          "pretrained": true,
+          "hyperparameters": {
+            "model.timm_image.checkpoint_name": "swin_small_patch4_window7_224"
+          }
+        },
+        "ag_fit_args": {
+          "time_limit": 60,
+          "hyperparameters": {
+            "env.per_gpu_batch_size": 4,
+            "env.batch_size": 4
+          }
+        }
+      },
+      "label_column": "label"
     }
 
-    const { data } = await axios.post(`${config.mlServiceAddr}/clf/train`, payload)
+    const { data } = await axios.post(`${config.mlServiceAddr}/model_service/train/image_classification`, payload)
+    const task_id = data.task_id
+    ExperimentService.Create({ experiment_name: task_id, project_id: projectID })
     return data
   } catch (error) {
     console.error(error)
