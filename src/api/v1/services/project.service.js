@@ -324,12 +324,12 @@ const TrainModel = async (projectID) => {
     const user = await User.findOne({ _id: project.author })
 
     const userEmail = user.email.split('@')[0]
-    const presets = "medium_quality"
+    const presets = "high_quality"
     const payload = {
       "userEmail": userEmail,
       "projectId": projectID,
       "runName": "ISE",
-      "training_time": 60,
+      "training_time": 180,
       "presets": presets
     }
 
