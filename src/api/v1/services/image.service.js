@@ -23,6 +23,7 @@ const List = async (projectID, page, size) => {
     const labelNames = new Set()
     const labels = []
     const files = images.map((image) => {
+      image.url = image.url.replace('undefined', 'localhost');
       let label = ''
       if (image.label_id) {
         label = image.label_id.name
