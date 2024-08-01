@@ -29,7 +29,7 @@ const databaseURL = process.env.DATABASE_URL
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET
 const webServiceAddr = process.env.WEB_SERVICE_ADDR
-const mlServiceAddr = process.env.ML_SERVICE_ADDR | 'http://localhost:8670'
+const mlServiceAddr = process.env.ML_SERVICE_ADDR || 'http://localhost:8670'
 const hostIP = process.env.HOST_IP
 
 const config = {

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import config from '#src/config/config.js'
 import Project from '#api/models/project.model.js'
+import User from '#api/models/user.model.js'
 import Image from '#api/models/image.model.js'
 import Experiment from '#api/models/experiment.model.js'
 import { ProjectCodePrefixes, PROJECT_CODE_LEN, ProjectTypes } from '../data/constants.js'
@@ -319,47 +320,25 @@ const TrainModel = async (projectID) => {
     // const experiment = await ExperimentService.LatestByProject(projectID)
     // const experimentName = experiment.name
 
-    // const payload = {
-    //   project_id: projectID,
-    //   experiment_name: experimentName,
-    //   gcs_folder: dataset.pattern,
-    //   gcs_output: `gs://${config.storageBucketName}/datasets/${experimentName}/`,
-    //   dataset_url: `gs://${config.storageBucketName}/datasets/${experimentName}/*.tfrec`,
-    //   target_size: 224,
-    //   classes,
-    //   num_classes: classes.length,
-    // }
-    //TODO: fix hardcode
+    const project = await Project.findOne({ _id: projectID })
+    const user = await User.findOne({ _id: project.author })
+
+    const userEmail = user.email.split('@')[0]
+    const presets = "medium_quality"
     const payload = {
-      "userEmail": "test-automl",
-      "projectName": "4-animal",
-      "training_time": 60,
+      "userEmail": userEmail,
+      "projectId": projectID,
       "runName": "ISE",
-      "presets": "medium_quality",
-      "dataset_url": "1QEhox5PADwRiL8h_cWtpp2vb229rKRXE",
-      "gcloud_dataset_bucketname": "string",
-      "gcloud_dataset_directory": "string",
-      "dataset_download_method": "gdrive",
-      "training_argument": {
-        "data_args": {},
-        "ag_model_args": {
-          "pretrained": true,
-          "hyperparameters": {
-            "model.timm_image.checkpoint_name": "swin_small_patch4_window7_224"
-          }
-        },
-        "ag_fit_args": {
-          "time_limit": 60,
-          "hyperparameters": {
-            "env.per_gpu_batch_size": 4,
-            "env.batch_size": 4
-          }
-        }
-      },
-      "label_column": "label"
+      "training_time": 60,
+      "presets": presets
     }
 
-    const { data } = await axios.post(`${config.mlServiceAddr}/model_service/train/image_classification`, payload)
+    const respone = await axios.post(`${config.mlServiceAddr}/model_service/train/v2/image_classification`, payload)
+    if (respone.status !== 200) {
+      throw new Error('Call ml-service training failed')
+    }
+    const data = respone.data
+    console.log(data)
     const task_id = data.task_id
     ExperimentService.Create({ experiment_name: task_id, project_id: projectID })
     return data

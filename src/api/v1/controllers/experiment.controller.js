@@ -24,9 +24,9 @@ const LatestByProject = async (req, res) => {
 }
 
 const DeployModel = async (req, res) => {
-  const { experiment_name } = req.query
+  const { experiment_name, experiment_status } = req.query
   try {
-    const data = await ExperimentService.DeployModel(experiment_name)
+    const data = await ExperimentService.DeployModel(experiment_name, experiment_status)
     return res.json(data)
   } catch (error) {
     return res.status(500).json({ error: error.message })

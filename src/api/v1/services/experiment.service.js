@@ -57,25 +57,28 @@ const LatestByProject = async (projectID) => {
   }
 }
 
-const DeployModel = async (experimentName) => {
+const DeployModel = async (experimentName, experimentStatus) => {
   try {
     const experiment = await Experiment.findOne({ name: experimentName })
     if (!experiment) {
       throw new Error('Experiment does not exist')
     }
-    //MLModel.Create()
+    // const projectID = experiment.project_id
+    // const project = await ProjectService.Get(projectID)
 
-    // const bestRun = await RunService.GetBestExperimentRun(experiment._id)
-    // const labelMap = await LabelService.GetLabelMap(experiment.project_id)
-    // const labels = Object.keys(labelMap)
-    // const payload = {
-    //   classes: labels,
-    //   target_size: 224,
-    //   model_dir: bestRun.best_model_url,
-    //   experiment_name: experiment.name,
+    // if (experimentStatus == ExperimentStatuses.DONE) {
+    //   const model = new MLModel({
+    //     name: 'model_' + experimentName,
+    //     project_id: projectID,
+    //     author_id: project.author,
+    //     url: "not implemented"
+    //   })
     // }
-    // const { data } = await axios.post(`${config.mlServiceAddr}/clf/deploy`, payload)
-    // return data
+
+    //? temporary save model in experiment
+
+    await Experiment.findOneAndUpdate({ name: experimentName }, { status: experimentStatus })
+
   } catch (error) {
     console.error(error)
     throw error
