@@ -123,10 +123,11 @@ const GetTrainingGraph = async (experimentName) => {
     // }
 
     // TODO: get training graph from ml service
-    const userEmail = 'test-automl'
-    const projectName = '4-animal'
+    const model = await GetModel(experimentName)
+    const userEmail = model.userEmail
+    const projectName = model.projectName
     const runName = 'ISE' // fixed
-    const task_id = 'lastest' // 'lastest' to return lastest experiment or use experiment id to return specific experiment
+    const task_id = experimentName // 'lastest' to return lastest experiment or use experiment id to return specific experiment
     const request = (`${config.mlServiceAddr}/model_service/train/fit_history/?userEmail=${userEmail}&projectName=${projectName}&runName=${runName}&task_id=${task_id}`)
     const req = 'http://localhost:8670/model_service/train/fit_history/?userEmail=test-automl&projectName=4-animal&runName=ISE&task_id=lastest'
     const res = await axios.get(request, { accept: 'application/json' })
