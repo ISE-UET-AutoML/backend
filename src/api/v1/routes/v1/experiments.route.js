@@ -9,5 +9,6 @@ experimentRouter.get('/latest', ExperimentController.LatestByProject)
 experimentRouter.get('/deploy', ExperimentController.DeployModel)
 experimentRouter.get('/train-history', ExperimentController.GetTrainingGraph)
 experimentRouter.get('/save-model', [isAuth], ExperimentController.SaveBestModel)
+experimentRouter.get('/model/:experimentName', ExperimentController.GetModel)
 
 export default experimentRouter
