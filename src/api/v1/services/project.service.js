@@ -1,6 +1,7 @@
 import axios from 'axios'
 import config from '#src/config/config.js'
 import Project from '#api/models/project.model.js'
+import User from '#api/models/user.model.js'
 import Image from '#api/models/image.model.js'
 import Experiment from '#api/models/experiment.model.js'
 import { ProjectCodePrefixes, PROJECT_CODE_LEN, ProjectTypes } from '../data/constants.js'
@@ -303,7 +304,7 @@ const UploadFiles = async (userID, projectID, files, uploadType) => {
     }
 
     const uploadedFiles = await StorageService.UploadLocalFiles(project._id, files, uploadType)
-    
+
     return uploadedFiles
   } catch (error) {
     console.error(error)
@@ -313,24 +314,33 @@ const UploadFiles = async (userID, projectID, files, uploadType) => {
 
 const TrainModel = async (projectID) => {
   try {
-    const dataset = await DatasetService.ListByProject(projectID)
-    const labelMap = await LabelService.GetLabelMap(projectID)
-    const classes = Object.keys(labelMap)
-    const experiment = await ExperimentService.LatestByProject(projectID)
-    const experimentName = experiment.name
+    // const dataset = await DatasetService.ListByProject(projectID)
+    // const labelMap = await LabelService.GetLabelMap(projectID)
+    // const classes = Object.keys(labelMap)
+    // const experiment = await ExperimentService.LatestByProject(projectID)
+    // const experimentName = experiment.name
 
+    const project = await Project.findOne({ _id: projectID })
+    const user = await User.findOne({ _id: project.author })
+
+    const userEmail = user.email.split('@')[0]
+    const presets = "high_quality"
     const payload = {
-      project_id: projectID,
-      experiment_name: experimentName,
-      gcs_folder: dataset.pattern,
-      gcs_output: `gs://${config.storageBucketName}/datasets/${experimentName}/`,
-      dataset_url: `gs://${config.storageBucketName}/datasets/${experimentName}/*.tfrec`,
-      target_size: 224,
-      classes,
-      num_classes: classes.length,
+      "userEmail": userEmail,
+      "projectId": projectID,
+      "runName": "ISE",
+      "training_time": 300,
+      "presets": presets
     }
 
-    const { data } = await axios.post(`${config.mlServiceAddr}/clf/train`, payload)
+    const respone = await axios.post(`${config.mlServiceAddr}/model_service/train/v2/image_classification`, payload)
+    if (respone.status !== 200) {
+      throw new Error('Call ml-service training failed')
+    }
+    const data = respone.data
+    console.log(data)
+    const task_id = data.task_id
+    ExperimentService.Create({ experiment_name: task_id, project_id: projectID })
     return data
   } catch (error) {
     console.error(error)

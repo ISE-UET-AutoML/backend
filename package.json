@@ -36,7 +36,7 @@
     "morgan": "^1.10.0"
   },
   "scripts": {
-    "dev": "nodemon index.js",
+    "dev": "nodemon index.js --watch src",
     "start": "node index.js",
     "production": "pm2-runtime index.js"
   },

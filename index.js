@@ -18,24 +18,19 @@ console.log("static", path.join(__dirname, 'public'));
 
 
 // middlewares
-const allowedOrigins = [config.webServiceAddr, config.mlServiceAddr]
-// app.use(
-//   cors({
-//     origin: function (origin, callback) {
-//       if (!origin) {
-//         callback(null, true)
-//       } else {
-//         callback(new Error('Not allowed by CORS'))
-//       }
-//     },
-//   })
-// )
+const allowedOrigins = ["http://localhost:3000", config.mlServiceAddr]
+app.use(
+  cors({
+    origin: allowedOrigins,
+  })
+)
 app.options('*', cors())
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Credentials', true)
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, X-Auth-Token, Content-Type, Accept')
-  res.header('Access-Control-Allow-Origin', "http://localhost:3000")
+  //res.header('Access-Control-Allow-Origin', "http://localhost:3000")
+  //res.header('Access-Control-Allow-Origin', "http://localhost:8670")
   next()
 })
 
