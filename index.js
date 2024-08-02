@@ -14,24 +14,23 @@ const __dirname = path.resolve();
 console.log(__dirname)
 const app = express()
 app.use(express.static('public'))
-console.log("static",path.join(__dirname, 'public'));
+console.log("static", path.join(__dirname, 'public'));
+
 
 // middlewares
-const allowedOrigins = [config.webServiceAddr, config.mlServiceAddr]
+const allowedOrigins = ["http://localhost:3000", config.mlServiceAddr]
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    },
+    origin: allowedOrigins,
   })
 )
+app.options('*', cors())
+
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Credentials', true)
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, X-Auth-Token, Content-Type, Accept')
+  //res.header('Access-Control-Allow-Origin', "http://localhost:3000")
+  //res.header('Access-Control-Allow-Origin', "http://localhost:8670")
   next()
 })
 
@@ -54,10 +53,10 @@ app.use((err, req, res, next) => {
   })
 })
 
-
+console.log(config.databaseURL)
 mongoose.set('strictQuery', true)
 mongoose
-  .connect(config.databaseURL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(config.databaseURL)
   .then(() => {
     console.log('Connected to DB')
     app.listen(config.port, () => {

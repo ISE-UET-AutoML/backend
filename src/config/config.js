@@ -4,7 +4,7 @@ import { Storage } from '@google-cloud/storage'
 import { IdempotencyStrategy } from '@google-cloud/storage/build/src/storage.js'
 import { fileURLToPath } from 'url'
 
-dotenv.config()
+dotenv.config({ override: true, debug: true })
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -29,8 +29,8 @@ const databaseURL = process.env.DATABASE_URL
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET
 const webServiceAddr = process.env.WEB_SERVICE_ADDR
-const mlServiceAddr = process.env.ML_SERVICE_ADDR
-const hostIP = process.env.HOST_IP
+const mlServiceAddr = process.env.ML_SERVICE_ADDR || 'http://localhost:8670'
+const hostIP = process.env.HOST_IP || 'localhost'
 
 const config = {
   port,

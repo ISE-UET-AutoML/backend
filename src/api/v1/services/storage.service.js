@@ -25,7 +25,7 @@ const saveFileToLocal = async (validFiles, projectID, uploadType) => {
     var label = paths[paths.length - 2]
     var file_path = `public/media/upload/${projectID}/${name}`
 
-    file.url = `http://${config.hostIP}:${config.port}/${file_path.replace('public/', '')}`
+    file.url = `http://${config.hostIP}:${config.port}/${file_path.replace('public/', '')}`.replace('undefined', 'localhost')
     file.key = name
     file.label = label
     results.push(file)

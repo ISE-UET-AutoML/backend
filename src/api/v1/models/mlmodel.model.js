@@ -6,6 +6,11 @@ const schema = new Schema(
     author_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
     url: { type: String, required: true },
+
+    //additional info for predict
+    projectName: { type: String },
+    userEmail: { type: String },
+    runID: { type: String },
   },
   { timestamps: true }
 )
