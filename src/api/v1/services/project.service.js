@@ -329,7 +329,7 @@ const TrainModel = async (projectID) => {
       "userEmail": userEmail,
       "projectId": projectID,
       "runName": "ISE",
-      "training_time": 180,
+      "training_time": 300,
       "presets": presets
     }
 

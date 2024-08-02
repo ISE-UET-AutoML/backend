@@ -133,7 +133,7 @@ const GetTrainingGraph = async (experimentName) => {
     const res = await axios.get(request, { accept: 'application/json' })
     // const bestRun = await RunService.GetBestExperimentRun(experiment._id)
 
-    console.log(res.data)
+    // console.log(res.data)
     return res.data
   } catch (error) {
     console.error(error)
