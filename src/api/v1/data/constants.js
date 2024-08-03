@@ -6,13 +6,15 @@ const GCS_HOST = 'https://storage.googleapis.com'
 const ALLOWED_FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp']
 
 const ProjectTypes = Object.freeze({
-  CLASSIFICATION: 'CLASSIFICATION',
+  IMAGE_CLASSIFICATION: 'IMAGE_CLASSIFICATION',
+  TEXT_CLASSIFICATION: 'TEXT_CLASSIFICATION',
   OBJECT_DETECTION: 'OBJECT_DETECTION',
   SEGMENTATION: 'SEGMENTATION',
 })
 
 const ProjectCodePrefixes = Object.freeze({
-  CLASSIFICATION: 'clf',
+  IMAGE_CLASSIFICATION: 'icf',
+  TEXT_CLASSIFICATION: 'tcf',
   OBJECT_DETECTION: 'obj',
   SEGMENTATION: 'seg',
 })
