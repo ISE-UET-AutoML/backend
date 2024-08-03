@@ -29,6 +29,7 @@ const Get = async (req, res) => {
 
 const Create = async (req, res) => {
     const { _id } = req.user
+
     try {
         const project = await ProjectService.Create(_id, req.body)
         return res.json(project)

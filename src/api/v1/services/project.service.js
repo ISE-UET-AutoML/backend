@@ -332,8 +332,18 @@ const TrainModel = async (projectID) => {
       "training_time": 300,
       "presets": presets
     }
+    switch (project.type) {
+      case ProjectTypes.IMAGE_CLASSIFICATION:
+        service_route = `${config.mlServiceAddr}/model_service/train/v2/image_classification`
+        break
+      case ProjectTypes.TEXT_CLASSIFICATION:
+        service_route = `${config.mlServiceAddr}/model_service/train/v2/text_prediction`
+        break
+      default:
+        throw new Error('Project type currently not supported: ' + project.type)
+    }
 
-    const respone = await axios.post(`${config.mlServiceAddr}/model_service/train/v2/image_classification`, payload)
+    const respone = await axios.post(service_route, payload)
     if (respone.status !== 200) {
       throw new Error('Call ml-service training failed')
     }
