@@ -332,6 +332,7 @@ const TrainModel = async (projectID) => {
       "training_time": 300,
       "presets": presets
     }
+    let service_route = ''
     switch (project.type) {
       case ProjectTypes.IMAGE_CLASSIFICATION:
         service_route = `${config.mlServiceAddr}/model_service/train/v2/image_classification`

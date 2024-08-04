@@ -33,6 +33,9 @@ const UploadTypes = Object.freeze({
 
 const DatasetTypes = Object.freeze({
   IMAGE_DIRECTORY: 'IMAGE_DIRECTORY',
+  CSV_MULTIMODAL: 'CSV_MULTIMODAL',
+  COCO_FORMAT: 'COCO_FORMAT',
+
   TFRECORD: 'TFRECORD',
   YOLOV8: 'YOLOV8',
 })
