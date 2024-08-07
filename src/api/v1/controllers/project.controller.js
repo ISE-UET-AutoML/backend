@@ -29,7 +29,6 @@ const Get = async (req, res) => {
 
 const Create = async (req, res) => {
     const { _id } = req.user
-
     try {
         const project = await ProjectService.Create(_id, req.body)
         return res.json(project)
@@ -93,6 +92,31 @@ const ListModel = async (req, res) => {
     const { _id } = req.user
     try {
         const data = await ProjectService.ListModel(_id)
+        res.json(data)
+    } catch (error) {
+        console.error(error)
+        res.sendStatus(500)
+    }
+}
+
+const CreateLSDataset = async (req, res) => {
+    const { _id } = req.user
+    const { id: projectID } = req.params
+    dataset_config = req.body
+    try {
+        const data = await ProjectService.CreateLSDataset(projectID, dataset_config)
+        res.json(data)
+    } catch (error) {
+        console.error(error)
+        res.sendStatus(500)
+    }
+}
+
+const GetLSDataset = async (req, res) => {
+    const { _id } = req.user
+    const { id: projectID } = req.params
+    try {
+        const data = await ProjectService.GetLSDataset(projectID)
         res.json(data)
     } catch (error) {
         console.error(error)
@@ -167,6 +191,8 @@ const ProjectController = {
     UploadFiles,
     TrainModel,
     ListModel,
+    CreateLSDataset,
+    GetLSDataset,
     GetDatasets,
     ExplainInstance
 }

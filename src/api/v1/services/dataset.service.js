@@ -4,6 +4,13 @@ import LabelService from '../services/label.service.js'
 import { randomString } from '../utils/string.util.js'
 import config from '#src/config/config.js'
 import axios from 'axios'
+import {
+  UploadTypes,
+  ALLOWED_FILE_EXTENSIONS,
+  GCS_HOST,
+  UPLOAD_BATCH_SIZE,
+  FILE_NAME_LEN,
+} from '../data/constants.js'
 
 const Upsert = async (dataset) => {
   const upsertDataset = [
@@ -74,5 +81,19 @@ const CreateTFRecordDataset = async (projectID) => {
   }
 }
 
-const DatasetService = { Upsert, DeleteAllByProject, ListByProject, CreateTFRecordDataset }
+const UploadAndCreateOCTPDataset = async (projectID, files, uploadType) => {
+  if (uploadType != UploadTypes.FOLDER)
+    throw new Error('Invalid upload type')
+
+  // Decode base64
+  console.log(uploadType)
+  for (const file of files) {
+    const originalFileName = Buffer.from(file.name, 'base64').toString('ascii')
+    console.log(originalFileName)
+  }
+}
+
+
+
+const DatasetService = { Upsert, DeleteAllByProject, ListByProject, CreateTFRecordDataset, UploadAndCreateOCTPDataset }
 export default DatasetService

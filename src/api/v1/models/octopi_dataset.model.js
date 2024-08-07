@@ -5,16 +5,19 @@ const schema = new Schema(
     {
         project_id: { type: Schema.Types.ObjectId, required: true, ref: 'Project' },
         name: { type: String, required: true, default: 'Untitled Dataset' },
-        type: { type: String, required: true, default: DatasetTypes.IMAGE_DIRECTORY },
+        type: { type: String, required: true, default: DatasetTypes.CSV_MULTIMODAL },
         // for training
         // list of (json properties or csv columns) that are uses to describe the dataset
-        __img: { type: [String] }, //* image columns
-        __txt: { type: [String] }, //* text columns
-        __cls: { type: [String] }, //* classiffied columns and boolean values
-        __igr: { type: [String] }, //* ignored columns
-        __val: { type: [String] }, //* value columns
+        _img: { type: [String] }, //* image columns
+        _txt: { type: [String] }, //* text columns
+        _cls: { type: [String] }, //* classiffied columns and boolean values
+        _igr: { type: [String] }, //* ignored columns, this columns will not be used for training
+        _val: { type: [String] }, //* value columns (int, float, etc)
+        _dtm: { type: String }, //* datetime columns
 
-        __lbl: { type: String, required: true }, //* label column
+        _lbl: { type: String, required: true }, //* label column
+
+        labels: { type: [String] }, //* for classification
         // for managing 
     },
     { timestamps: true }

@@ -4,7 +4,7 @@ import Project from '#api/models/project.model.js'
 import User from '#api/models/user.model.js'
 import Image from '#api/models/image.model.js'
 import Experiment from '#api/models/experiment.model.js'
-import { ProjectCodePrefixes, PROJECT_CODE_LEN, ProjectTypes } from '../data/constants.js'
+import { ProjectCodePrefixes, PROJECT_CODE_LEN, ProjectTypes, UploadTypes } from '../data/constants.js'
 import { randomString } from '#api/utils/string.util.js'
 import StorageService from './storage.service.js'
 import LabelService from './label.service.js'
@@ -42,22 +42,34 @@ const Create = async (userID, { name, description, expectation_accuracy, type })
   }
 
   try {
-    const existingProject = await Project.findOne({ name })
+    const existingProject = await Project.findOne({ name: name, author: userID })
+    console.log(existingProject)
     if (existingProject != undefined) {
       throw new Error('Project already exist')
     }
 
     const projectCode = generateProjectCode(type)
+
+    // const ls_create_project = await axios.post(`${config.mlServiceAddr}/label_service/projects/create`, {
+    //   "name": name,
+    //   "type": type,
+    //   "label_config": {
+    //     "label_type": "any",
+    //     "label_choices": []
+    //   }
+    // })
     const project = new Project({
       name,
       description,
       expectation_accuracy,
       type,
       code: projectCode,
+      //ls_project_id: ls_create_project.data.id,
       author: userID,
     })
 
     await project.save()
+
     return project
   } catch (error) {
     console.error(error)
@@ -86,6 +98,7 @@ const Update = async (projectID, updateInfo) => {
 }
 
 const Delete = async (userID, projectID) => {
+  //TODO: Delete label studio project
   try {
     const project = await Project.findOne({ _id: projectID, author: userID })
     if (project == undefined) {
@@ -288,7 +301,71 @@ const hard_result = {
   pagination: { page: 1, size: 24, total_page: 2 }
 }
 
+const CreateLSDataset = async (projectID, dataset_config) => {
+  try {
+    const project = await Project.findOne({ _id: projectID })
+    if (project == undefined)
+      throw new Error('Project not found')
+    if (project.ls_project_id)
+      throw new Error('Label Studio project already created')
+
+    const { data } = await axios.post(`${config.mlServiceAddr}/label_service/projects/create`, {
+      "name": project.name,
+      "type": project.type,
+      "label_config": {
+        "label_type": "multiclass", //TODO: add support for other label types
+        // default label choices for 4 animal image classification
+        "label_choices": (dataset_config.label_choices || ["dog", "cat", "horse", "deer"])
+      }
+    })
+    project.ls_project_id = data.id
+    await project.save()
+    return { "ls_project_id": data.id }
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+const GetLSDataset = async (projectID) => {
+  try {
+    const project = await Project.findOne({ _id: projectID })
+    if (project == undefined)
+      throw new Error('Project not found')
+    if (!project.ls_project_id)
+      throw new Error('Label Studio project not created')
+    return { "message": "Not implemented" }
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+
 const UploadFiles = async (userID, projectID, files, uploadType) => {
+  //? testing minhvv's octopi dataset
+  // const project = await Project.findOne({ _id: projectID })
+  // if (project == undefined)
+  //   throw new Error('Project not found')
+
+  // if (project.type == ProjectTypes.IMAGE_CLASSIFICATION)
+  //   uploadType = UploadTypes.IMAGE_LABEL_FOLDER
+  // if (project.type == ProjectTypes.TEXT_CLASSIFICATION)
+  //   uploadType = UploadTypes.CSV_MULTIMODAL
+
+  // DatasetService.UploadAndCreateOCTPDataset(projectID, files, uploadType)
+
+  let formData = new FormData()
+  files.forEach(file => {
+    formData.append('files', file)
+  });
+
+  res = await axios.post(`${config.mlServiceAddr}/label_service/projects/any/upload/any`, formData)
+  console.log(res.error)
+  throw new Error('testing api')
+
   try {
     const project = await Project.findOne({ _id: projectID }).populate('author')
     if (project == undefined) {
@@ -375,6 +452,6 @@ const generateProjectCode = (projectType) => {
   return `${prefix}-${code}`
 }
 
-const ProjectService = { List, Get, Create, Update, Delete, UploadFiles, TrainModel, ListModel }
+const ProjectService = { List, Get, Create, Update, Delete, CreateLSDataset, GetLSDataset, UploadFiles, TrainModel, ListModel }
 
 export default ProjectService

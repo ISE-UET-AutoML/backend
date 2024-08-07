@@ -4,6 +4,7 @@ const schema = new Schema(
   {
     name: { type: String, required: true },
     code: { type: String, required: true },
+    ls_project_id: { type: String },
     author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     type: { type: String, required: true },
     expectation_accuracy: { type: Number, required: true },

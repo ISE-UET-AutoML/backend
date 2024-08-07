@@ -3,7 +3,8 @@ const FILE_NAME_LEN = 20
 const UPLOAD_BATCH_SIZE = 32
 const DELETE_BATCH_SIZE = UPLOAD_BATCH_SIZE
 const GCS_HOST = 'https://storage.googleapis.com'
-const ALLOWED_FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp']
+const ALLOWED_IMAGE_FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp']
+const ALLOWED_FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'json', 'csv']
 
 const ProjectTypes = Object.freeze({
   TABULAR_CLASSIFICATION: 'TABULAR_CLASSIFICATION',
@@ -29,13 +30,15 @@ const ProjectCodePrefixes = Object.freeze({
 const UploadTypes = Object.freeze({
   MULTIPLE: 0,
   FOLDER: 1,
+  IMAGE_LABEL_FOLDER: 'IMAGE_LABEL_FOLDER',
+  JSON_COCO_FORMAT: 'JSON_COCO_FORMAT',
+  CSV_MULTIMODAL: 'CSV_MULTIMODAL',
+  CSV_TIMESERIES: 'CSV_TIMESERIES',
 })
 
 const DatasetTypes = Object.freeze({
-  IMAGE_DIRECTORY: 'IMAGE_DIRECTORY',
   CSV_MULTIMODAL: 'CSV_MULTIMODAL',
   COCO_FORMAT: 'COCO_FORMAT',
-
   TFRECORD: 'TFRECORD',
   YOLOV8: 'YOLOV8',
 })
@@ -54,6 +57,7 @@ export {
   UPLOAD_BATCH_SIZE,
   DELETE_BATCH_SIZE,
   ALLOWED_FILE_EXTENSIONS,
+  ALLOWED_IMAGE_FILE_EXTENSIONS,
   ProjectTypes,
   ProjectCodePrefixes,
   UploadTypes,

@@ -38,6 +38,7 @@ const saveFileToLocal = async (validFiles, projectID, uploadType) => {
 
 const UploadLocalFiles = async (projectID, files, uploadType) => {
   try {
+
     const { labels, validFiles } = parseAndValidateFiles(files, uploadType)
     // console.log('valid file', validFiles[0]);
 
