@@ -81,19 +81,14 @@ const CreateTFRecordDataset = async (projectID) => {
   }
 }
 
-const UploadAndCreateOCTPDataset = async (projectID, files, uploadType) => {
-  if (uploadType != UploadTypes.FOLDER)
-    throw new Error('Invalid upload type')
-
-  // Decode base64
-  console.log(uploadType)
-  for (const file of files) {
-    const originalFileName = Buffer.from(file.name, 'base64').toString('ascii')
-    console.log(originalFileName)
-  }
+const createLabelDataset = async (projectID, labels) => {
+  const insertingLabels = labels['label'].map((label) => ({
+    project_id: projectID,
+    name: label,
+  }))
+  await LabelService.UpsertAll(projectID, insertingLabels)
+  return await LabelService.List(projectID)
 }
 
-
-
-const DatasetService = { Upsert, DeleteAllByProject, ListByProject, CreateTFRecordDataset, UploadAndCreateOCTPDataset }
+const DatasetService = { Upsert, DeleteAllByProject, ListByProject, CreateTFRecordDataset, createLabelDataset }
 export default DatasetService

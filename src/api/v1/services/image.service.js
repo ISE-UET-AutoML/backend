@@ -168,9 +168,10 @@ const ReplaceLabel = (key, isLabelExist, newLabel) => {
   return paths.filter(Boolean).join('/')
 }
 
-const UpdateLabel = (imageId, newLabelId) => {
-  const image = Image.findById(imageId)
+const UpdateLabel = async (imageId, newLabelId) => {
+  const image = await Image.findById(imageId)
   image.label_id = newLabelId
+
   image.save()
   return image
 }
