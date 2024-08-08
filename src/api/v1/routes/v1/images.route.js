@@ -6,7 +6,7 @@ const imageRouter = Router()
 imageRouter.get('/', ImageController.List)
 imageRouter.delete('/:id', ImageController.Delete)
 imageRouter.put('/:id/labels', ImageController.LabelImage)
-imageRouter.get('/:id', ImageController.UpdateImage)
+imageRouter.post('/:id', ImageController.UpdateImage)
 
 
 export default imageRouter

@@ -23,6 +23,7 @@ const saveFileToLocal = async (validFiles, projectID, uploadType) => {
     var paths = file.name.split('/')
     var name = paths[paths.length - 1]
     var label = paths[paths.length - 2]
+
     var file_path = `public/media/upload/${projectID}/${name}`
 
     file.url = `http://${config.hostIP}:${config.port}/${file_path.replace('public/', '')}`.replace('undefined', 'localhost')
@@ -37,8 +38,17 @@ const saveFileToLocal = async (validFiles, projectID, uploadType) => {
 }
 
 const UploadLocalFiles = async (projectID, files, uploadType) => {
+  switch (uploadType) {
+    case UploadTypes.FOLDER:
+      return await UploadLabeledImages_old(projectID, files)
+    case UploadTypes.IMAGE_LABELED_FOLDER:
+      return await UploadLabeledImages(projectID, files)
+    case UploadTypes.CSV_SINGLE:
+      throw new Error('Not implemented yet')
+  }
+}
+const UploadLabeledImages_old = async (projectID, files) => {
   try {
-
     const { labels, validFiles } = parseAndValidateFiles(files, uploadType)
     // console.log('valid file', validFiles[0]);
 
@@ -49,13 +59,78 @@ const UploadLocalFiles = async (projectID, files, uploadType) => {
 
     const uploadedFiles = await saveFileToLocal(validFiles, projectID, uploadType)
     // Upload folder
-    if (labels.length > 0) {
-      const insertingLabels = labels.map((label) => ({
+    const setLbData = new Set(uploadedFiles.map((v, i) => v.label))
+    // const labelData = setLb.intersection(setLbData)
+    const labelData = new Set([...labels].filter(i => setLbData.has(i)));
+    const lbs = [...labelData]
+
+    if (lbs.length > 0) {
+      const insertingLabels = lbs.map((label) => ({
         project_id: projectID,
         name: label,
       }))
       await LabelService.UpsertAll(projectID, insertingLabels)
     }
+    const labelMap = await LabelService.GetLabelMap(projectID)
+    const datasetInfo = {
+      key: `label/${projectID}`,
+      pattern: `public/label/${projectID}`,
+      project_id: projectID,
+    }
+    const dataset = await DatasetService.Upsert(datasetInfo)
+
+    const uploadedFilesInfo = await insertUploadedFiles(
+      uploadedFiles,
+      projectID,
+      dataset._id,
+      labelMap
+    )
+
+    const defaultPageSize = 24
+    const totalPage = Math.ceil(uploadedFilesInfo.length / defaultPageSize)
+    const fileInfo = uploadedFilesInfo.slice(0, defaultPageSize)
+    // Convert label map to array of labels: { id, value }
+    const labelsWithID = Object.entries(labelMap).map(([label, id]) => {
+      return { id: id.toString(), value: label }
+    })
+
+    // Update project thumbnail
+    const thumbnailURL = uploadedFilesInfo[0].url
+    await ProjectService.Update(projectID, { thumbnail_url: thumbnailURL, uploaded: true })
+    return {
+      files: fileInfo,
+      labels: labelsWithID,
+      pagination: { page: 1, size: 24, total_page: totalPage },
+    }
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+const UploadLabeledImages = async (projectID, files) => {
+  try {
+    const { labels, validFiles } = parseAndValidateFiles(files, uploadType)
+    // console.log('valid file', validFiles[0]);
+
+    const folderPath = `public/media/upload/${projectID}`
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
+
+    const uploadedFiles = await saveFileToLocal(validFiles, projectID, uploadType)
+    // Upload folder
+    if (labels.length == 0)
+      throw new Error('No label found')
+
+    for (let i = 0; i < uploadedFiles.length; i++) {
+      const label = labels[i]
+      const labelPath = `public/media/upload/${projectID}/${label}`
+      if (!fs.existsSync(labelPath)) {
+        fs.mkdirSync(labelPath, { recursive: true });
+      }
+    }
+
     const labelMap = await LabelService.GetLabelMap(projectID)
     const datasetInfo = {
       key: `label/${projectID}`,
