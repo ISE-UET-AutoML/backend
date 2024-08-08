@@ -158,32 +158,16 @@ const GetDatasets = async (req, res) => {
 }
 
 const ExplainInstance = async (req, res) => {
-    // // const image = req.body.image
-    // const {userEmail, projectName, runName } = JSON.parse(req.body.json);
+    // const image = req.body.image
+    const { id: projectID } = req.params
+    console.log(projectID)
+    try {
+        const data = await ProjectService.Explain(projectID, req.body)
+        return res.json(data)
+    } catch(err) {
+        console.log(err)
+    }
 
-    // console.log(userEmail, projectName, runName);
-
-    // const options = {
-    //     headers: {
-    //         'Content-Type': 'multipart/form-data'
-    //     }
-    // }
-    // try {
-    //     const { data } = await axios.post(`${config.mlServiceAddr}/model_service/train/image_classification/explain`, {
-    //         userEmail: userEmail,
-    //         projectName: projectName,
-    //         runName: runName,
-    //         image: req.files.image
-    //     }, options);
-
-
-    //     const base64_image_str = data.explain_image;
-    //     const explain_image_str = `data:image/jpeg;base64,${base64_image_str}`;
-
-    //     return res.json({status: 'success', explain_image: explain_image_str})
-    // } catch (err) {
-    //     console.log(err);
-    // }
 }
 
 

@@ -253,6 +253,70 @@ const generateProjectCode = (projectType) => {
   return `${prefix}-${code}`
 }
 
-const ProjectService = { List, Get, Create, Update, Delete, CreateLSDataset, GetLSDataset, UploadFiles, TrainModel, ListModel }
+
+const Explain = async (projectID, instance) => {
+  const project = await Project.findOne({ _id: projectID })
+  const user = await User.findOne({ _id: project.author })
+
+  const userEmail = user.email.split('@')[0]
+  const projectType = project.type
+
+  let payload = {}
+
+  // TODO: fix hardcode values
+
+  if (projectType === ProjectTypes.IMAGE_CLASSIFICATION) {
+    payload = {
+      userEmail: 'test-automl',
+      projectName: '4-animal',
+      runName: "ISE",
+      image: instance.image
+    }
+
+    const options = {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+
+    try {
+      const { data } = await axios.post(`${config.mlServiceAddr}/model_service/train/image_classification/explain`, payload, options)
+      const base64_image_str = data.explain_image
+      const explain_image_str = `data:image/jpeg;base64,${base64_image_str}`
+
+      return { status: 'success', explain_image: explain_image_str }
+    } catch (error) {
+      console.log(error)
+    }
+
+  } else if (projectType === ProjectTypes.TEXT_CLASSIFICATION) {
+    // payload = {
+    //   "userEmail": userEmail,
+    //   "projectName": project.name,
+    //   "runName": "ISE",
+    //   "text": instance.text
+    // }
+
+    payload = {
+      userEmail: "test-automl",
+      projectName: "66aa68b3015d0ebc8b61cc76",
+      runName: "ISE",
+      text: instance.text
+    }
+
+    try {
+      const response = await axios.post(`${config.mlServiceAddr}/model_service/train/text_prediction/explain`, payload)
+
+      const explain_html = response.data.explain_html
+
+      return { status: 'success', explain_html: explain_html }
+    } catch (error) {
+      console.log(error.body) 
+    }
+  }
+
+}
+
+const ProjectService = { List, Get, Create, Update, Delete, CreateLSDataset, GetLSDataset, UploadFiles, TrainModel, ListModel, Explain }
 
 export default ProjectService
