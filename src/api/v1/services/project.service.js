@@ -345,27 +345,6 @@ const GetLSDataset = async (projectID) => {
 
 
 const UploadFiles = async (userID, projectID, files, uploadType) => {
-  //? testing minhvv's octopi dataset
-  // const project = await Project.findOne({ _id: projectID })
-  // if (project == undefined)
-  //   throw new Error('Project not found')
-
-  // if (project.type == ProjectTypes.IMAGE_CLASSIFICATION)
-  //   uploadType = UploadTypes.IMAGE_LABEL_FOLDER
-  // if (project.type == ProjectTypes.TEXT_CLASSIFICATION)
-  //   uploadType = UploadTypes.CSV_MULTIMODAL
-
-  // DatasetService.UploadAndCreateOCTPDataset(projectID, files, uploadType)
-
-  let formData = new FormData()
-  files.forEach(file => {
-    formData.append('files', file)
-  });
-
-  res = await axios.post(`${config.mlServiceAddr}/label_service/projects/any/upload/any`, formData)
-  console.log(res.error)
-  throw new Error('testing api')
-
   try {
     const project = await Project.findOne({ _id: projectID }).populate('author')
     if (project == undefined) {
@@ -408,6 +387,7 @@ const TrainModel = async (projectID) => {
       "runName": "ISE",
       "training_time": 300,
       "presets": presets
+      //add dataset config
     }
     let service_route = ''
     switch (project.type) {
