@@ -23,6 +23,7 @@ const saveFileToLocal = async (validFiles, projectID, uploadType) => {
     var paths = file.name.split('/')
     var name = paths[paths.length - 1]
     var label = paths[paths.length - 2]
+
     var file_path = `public/media/upload/${projectID}/${name}`
 
     file.url = `http://${config.hostIP}:${config.port}/${file_path.replace('public/', '')}`.replace('undefined', 'localhost')
@@ -48,8 +49,13 @@ const UploadLocalFiles = async (projectID, files, uploadType) => {
 
     const uploadedFiles = await saveFileToLocal(validFiles, projectID, uploadType)
     // Upload folder
-    if (labels.length > 0) {
-      const insertingLabels = labels.map((label) => ({
+    const setLbData = new Set(uploadedFiles.map((v, i) => v.label))
+    // const labelData = setLb.intersection(setLbData)
+    const labelData = new Set([...labels].filter(i => setLbData.has(i)));
+    const lbs = [...labelData]
+
+    if (lbs.length > 0) {
+      const insertingLabels = lbs.map((label) => ({
         project_id: projectID,
         name: label,
       }))
