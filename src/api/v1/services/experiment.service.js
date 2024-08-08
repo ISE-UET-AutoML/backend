@@ -139,7 +139,7 @@ const GetTrainingGraph = async (experimentName) => {
     console.error(error)
     throw error
   }
-}
+}   
 
 const SaveBestModel = async (userID, experimentName) => {
   try {
