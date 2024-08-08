@@ -65,8 +65,6 @@ const UploadFiles = async (req, res) => {
     const { type } = req.body
     try {
         const uploadedFiles = await ProjectService.UploadFiles(_id, id, req.files.files, type)
-        // TODO
-        // need to save dataset to database (id)
         return res.json(uploadedFiles)
     } catch (error) {
         console.error(error)
@@ -101,9 +99,17 @@ const ListModel = async (req, res) => {
 
 const GetDatasets = async (req, res) => {
     const { id } = req.params
+    const page = req.query.page || 1
     try {
         const defaultPageSize = 24
-        const images = await ImageService.List(id, 1, defaultPageSize)
+        const images = await ImageService.List(id, page, defaultPageSize)
+        const labels = await LabelService.List(id)
+        const labelResult = labels.map((v, i) => {
+            return {
+                id: v._id.toString(),
+                value: v.name
+            }
+        })
         const files = images.data.files.map((value, index) => {
             return {
                 _id: value._id,
@@ -115,7 +121,7 @@ const GetDatasets = async (req, res) => {
         })
         const results = {
             'files': files,
-            'labels': images.data.labels,
+            'labels': labelResult,
             'pagination': images.meta,
         }
         // console.log(results);

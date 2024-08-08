@@ -32,6 +32,7 @@ const ExperimentStatuses = Object.freeze({
   PROCESSING: 'PROCESSING',
   DONE: 'DONE',
   STOPPED: 'STOPPED',
+  FAILED: 'FAILED',
 })
 
 export {

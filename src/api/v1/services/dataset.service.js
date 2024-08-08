@@ -74,5 +74,14 @@ const CreateTFRecordDataset = async (projectID) => {
   }
 }
 
-const DatasetService = { Upsert, DeleteAllByProject, ListByProject, CreateTFRecordDataset }
+const createLabelDataset = async (projectID, labels) => {
+  const insertingLabels = labels['label'].map((label) => ({
+    project_id: projectID,
+    name: label,
+  }))
+  await LabelService.UpsertAll(projectID, insertingLabels)
+  return await LabelService.List(projectID)
+}
+
+const DatasetService = { Upsert, DeleteAllByProject, ListByProject, CreateTFRecordDataset, createLabelDataset }
 export default DatasetService
