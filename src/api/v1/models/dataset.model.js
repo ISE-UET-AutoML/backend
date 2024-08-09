@@ -7,6 +7,8 @@ const schema = new Schema(
     type: { type: String, required: true, default: DatasetTypes.IMAGE_DIRECTORY },
     pattern: { type: String },
     project_id: { type: Schema.Types.ObjectId, required: true },
+
+    csv_data_source: { type: String },
   },
   { timestamps: true }
 )

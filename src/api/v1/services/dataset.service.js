@@ -4,6 +4,13 @@ import LabelService from '../services/label.service.js'
 import { randomString } from '../utils/string.util.js'
 import config from '#src/config/config.js'
 import axios from 'axios'
+import {
+  UploadTypes,
+  ALLOWED_FILE_EXTENSIONS,
+  GCS_HOST,
+  UPLOAD_BATCH_SIZE,
+  FILE_NAME_LEN,
+} from '../data/constants.js'
 
 const Upsert = async (dataset) => {
   const upsertDataset = [
@@ -74,5 +81,14 @@ const CreateTFRecordDataset = async (projectID) => {
   }
 }
 
-const DatasetService = { Upsert, DeleteAllByProject, ListByProject, CreateTFRecordDataset }
+const createLabelDataset = async (projectID, labels) => {
+  const insertingLabels = labels['label'].map((label) => ({
+    project_id: projectID,
+    name: label,
+  }))
+  await LabelService.UpsertAll(projectID, insertingLabels)
+  return await LabelService.List(projectID)
+}
+
+const DatasetService = { Upsert, DeleteAllByProject, ListByProject, CreateTFRecordDataset, createLabelDataset }
 export default DatasetService

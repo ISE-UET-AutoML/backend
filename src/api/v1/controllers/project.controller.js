@@ -65,8 +65,6 @@ const UploadFiles = async (req, res) => {
     const { type } = req.body
     try {
         const uploadedFiles = await ProjectService.UploadFiles(_id, id, req.files.files, type)
-        // TODO
-        // need to save dataset to database (id)
         return res.json(uploadedFiles)
     } catch (error) {
         console.error(error)
@@ -99,12 +97,44 @@ const ListModel = async (req, res) => {
     }
 }
 
+const CreateLSDataset = async (req, res) => {
+    const { _id } = req.user
+    const { id: projectID } = req.params
+    dataset_config = req.body
+    try {
+        const data = await ProjectService.CreateLSDataset(projectID, dataset_config)
+        res.json(data)
+    } catch (error) {
+        console.error(error)
+        res.sendStatus(500)
+    }
+}
+
+const GetLSDataset = async (req, res) => {
+    const { _id } = req.user
+    const { id: projectID } = req.params
+    try {
+        const data = await ProjectService.GetLSDataset(projectID)
+        res.json(data)
+    } catch (error) {
+        console.error(error)
+        res.sendStatus(500)
+    }
+}
+
 const GetDatasets = async (req, res) => {
     const { id } = req.params
     const page = req.query.page || 1
     try {
         const defaultPageSize = 24
         const images = await ImageService.List(id, page, defaultPageSize)
+        const labels = await LabelService.List(id)
+        const labelResult = labels.map((v, i) => {
+            return {
+                id: v._id.toString(),
+                value: v.name
+            }
+        })
         const files = images.data.files.map((value, index) => {
             return {
                 _id: value._id,
@@ -116,7 +146,7 @@ const GetDatasets = async (req, res) => {
         })
         const results = {
             'files': files,
-            'labels': images.data.labels,
+            'labels': labelResult,
             'pagination': images.meta,
         }
         // console.log(results);
@@ -166,6 +196,8 @@ const ProjectController = {
     UploadFiles,
     TrainModel,
     ListModel,
+    CreateLSDataset,
+    GetLSDataset,
     GetDatasets,
     ExplainInstance
 }
