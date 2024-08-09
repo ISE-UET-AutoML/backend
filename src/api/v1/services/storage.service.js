@@ -38,16 +38,57 @@ const saveFileToLocal = async (validFiles, projectID, uploadType) => {
 }
 
 const UploadLocalFiles = async (projectID, files, uploadType) => {
+  if (uploadType == UploadTypes.FOLDER)
+    return await UploadLabeledImages_old(projectID, files, uploadType)
+  if (uploadType == UploadTypes.CSV_SINGLE) {
+    return await UploadOneCSV(projectID, files)
+  }
   switch (uploadType) {
-    case UploadTypes.FOLDER:
-      return await UploadLabeledImages_old(projectID, files)
+    case UploadTypes.FOLDER: // switch case not working
+      return await UploadLabeledImages_old(projectID, files, uploadType)
     case UploadTypes.IMAGE_LABELED_FOLDER:
       return await UploadLabeledImages(projectID, files)
     case UploadTypes.CSV_SINGLE:
       throw new Error('Not implemented yet')
   }
 }
-const UploadLabeledImages_old = async (projectID, files) => {
+
+const UploadOneCSV = async (projectID, file) => {
+  try {
+    const originalFileName = Buffer.from(file.name, 'base64').toString('ascii')
+    file.name = "train.csv"
+    var file_path = `public/media/upload/${projectID}/${file.name}`
+
+    file.url = `http://${config.hostIP}:${config.port}/${file_path.replace('public/', '')}`.replace('undefined', 'localhost')
+    const folderPath = `public/media/upload/${projectID}`
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
+    fs.writeFile(file_path, file.data, (err) => { })
+
+    const datasetInfo = {
+      key: `label/${projectID}`,
+      pattern: `public/label/${projectID}`,
+      project_id: projectID,
+    }
+    const dataset = await DatasetService.Upsert(datasetInfo)
+    dataset.csv_data_source = file.url
+    dataset.type = 'csv'
+    await dataset.save()
+    return {
+      files: "",
+      labels: "",
+      pagination: {},
+      csv_data_source: file.url
+    }
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+const UploadLabeledImages_old = async (projectID, files, uploadType) => {
+  console.log('UploadLabeledImages_old');
   try {
     const { labels, validFiles } = parseAndValidateFiles(files, uploadType)
     // console.log('valid file', validFiles[0]);
@@ -101,6 +142,7 @@ const UploadLabeledImages_old = async (projectID, files) => {
       files: fileInfo,
       labels: labelsWithID,
       pagination: { page: 1, size: 24, total_page: totalPage },
+      csv_data_source: ''
     }
   } catch (error) {
     console.error(error)
@@ -373,7 +415,7 @@ const uploadFile = async (file, projectID, uploadType) => {
     return { key: keyWithoutPrefix, name, label }
   } catch (error) {
     console.error(error)
-    Promise.reject(new Error(error))
+    throw error
   }
 }
 
